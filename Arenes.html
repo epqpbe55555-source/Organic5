@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Study Smart — Arenes</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;0,700;1,600&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+:root{
+  --ink:#1B1712;
+  --ink-soft:#463D31;
+  --parchment:#EDE4CF;
+  --parchment-2:#E1D3AF;
+  --paper-card:#F7F1E1;
+  --amber:#B9812F;
+  --amber-deep:#8E611C;
+  --violet:#5C3566;
+  --violet-deep:#432449;
+  --rust:#AE441C;
+  --rust-deep:#7E2F12;
+  --line: rgba(27,23,18,0.16);
+  --shadow: rgba(27,23,18,0.18);
+  --radius: 4px;
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:
+    radial-gradient(ellipse at top left, rgba(185,129,47,0.08), transparent 55%),
+    radial-gradient(ellipse at bottom right, rgba(92,53,102,0.07), transparent 55%),
+    var(--parchment);
+  color:var(--ink);
+  font-family:'Inter',sans-serif;
+  min-height:100vh;
+}
+
+/* faint graph-paper texture */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size:34px 34px;
+  opacity:0.35;
+  z-index:0;
+}
+
+header.masthead{
+  position:relative;
+  z-index:2;
+  padding:44px 6vw 20px;
+  border-bottom:1px solid var(--line);
+}
+.eyebrow{
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;
+  letter-spacing:0.22em;
+  text-transform:uppercase;
+  color:var(--amber-deep);
+  font-weight:600;
+}
+h1.title{
+  font-family:'Fraunces',serif;
+  font-style:italic;
+  font-weight:600;
+  font-size:clamp(2.4rem,6vw,4.2rem);
+  margin:6px 0 4px;
+  line-height:0.98;
+  letter-spacing:-0.01em;
+}
+.subtitle{
+  font-family:'JetBrains Mono',monospace;
+  font-size:13px;
+  color:var(--ink-soft);
+  max-width:640px;
+  line-height:1.5;
+}
+
+/* ---- ring nav (benzene-chain of hexagons) ---- */
+nav.ring-nav{
+  position:relative;
+  z-index:2;
+  display:flex;
+  align-items:center;
+  gap:0;
+  padding:26px 6vw 10px;
+  overflow-x:auto;
+}
+.ring-track{
+  position:relative;
+  display:flex;
+  align-items:center;
+}
+.ring-track::before{
+  content:"";
+  position:absolute;
+  left:34px; right:34px; top:50%;
+  height:2px;
+  background:repeating-linear-gradient(90deg, var(--ink) 0 6px, transparent 6px 12px);
+  opacity:0.35;
+  transform:translateY(-1px);
+  z-index:0;
+}
+.hex-btn{
+  position:relative;
+  z-index:1;
+  width:118px;
+  height:104px;
+  margin-right:-6px;
+  clip-path:polygon(25% 4%, 75% 4%, 98% 50%, 75% 96%, 25% 96%, 2% 50%);
+  border:none;
+  background:var(--paper-card);
+  color:var(--ink);
+  font-family:'JetBrains Mono',monospace;
+  font-size:11.5px;
+  font-weight:600;
+  letter-spacing:0.03em;
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  transition:transform .18s ease, background .18s ease, color .18s ease;
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.hex-btn .num{
+  font-family:'Fraunces',serif;
+  font-style:italic;
+  font-size:20px;
+  color:var(--amber-deep);
+}
+.hex-btn:hover{ transform:translateY(-4px); }
+.hex-btn.active{
+  background:var(--ink);
+  color:var(--parchment);
+}
+.hex-btn.active .num{ color:var(--amber); }
+
+main{ position:relative; z-index:2; padding:20px 6vw 80px; }
+
+.panel{ display:none; animation:fadeIn .35s ease; }
+.panel.active{ display:block; }
+@keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+.section-head{
+  display:flex;
+  align-items:baseline;
+  gap:14px;
+  margin:18px 0 22px;
+  flex-wrap:wrap;
+}
+.section-head h2{
+  font-family:'Fraunces',serif;
+  font-weight:600;
+  font-size:clamp(1.6rem,3vw,2.3rem);
+  margin:0;
+}
+.section-head p{
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;
+  color:var(--ink-soft);
+  margin:0;
+}
+
+/* ============ OVERVIEW ============ */
+.law-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(280px,1fr));
+  gap:14px;
+}
+.law-card{
+  background:var(--paper-card);
+  border:1px solid var(--line);
+  border-left:4px solid var(--amber);
+  border-radius:var(--radius);
+  padding:16px 18px;
+  box-shadow:0 2px 0 var(--shadow);
+}
+.law-card.v{ border-left-color:var(--violet); }
+.law-card.r{ border-left-color:var(--rust); }
+.law-card h3{
+  font-family:'Fraunces',serif;
+  font-size:1.02rem;
+  margin:0 0 8px;
+}
+.law-card ul{ margin:0; padding-left:18px; font-size:13.5px; line-height:1.55; color:var(--ink-soft); }
+.law-card ul li{ margin-bottom:4px; }
+.law-card code{
+  font-family:'JetBrains Mono',monospace;
+  background:rgba(27,23,18,0.06);
+  padding:1px 4px;
+  border-radius:3px;
+  font-size:12.5px;
+}
+
+/* ============ DIAGRAMS ============ */
+.diagram-block{
+  background:var(--paper-card);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:22px 22px 26px;
+  margin-bottom:22px;
+}
+.diagram-block h3{
+  font-family:'Fraunces',serif;
+  font-style:italic;
+  font-size:1.25rem;
+  margin:0 0 4px;
+}
+.diagram-block .hint{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11.5px;
+  color:var(--ink-soft);
+  margin:0 0 16px;
+}
+.btn-row{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+.chip{
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;
+  border:1px solid var(--ink);
+  background:transparent;
+  color:var(--ink);
+  padding:7px 12px;
+  border-radius:20px;
+  cursor:pointer;
+  transition:all .15s ease;
+}
+.chip:hover{ background:var(--ink); color:var(--parchment); }
+.chip.on{ background:var(--amber-deep); border-color:var(--amber-deep); color:var(--parchment); }
+
+.ring-stage{
+  display:flex;
+  gap:26px;
+  align-items:center;
+  flex-wrap:wrap;
+  background:var(--parchment-2);
+  border-radius:var(--radius);
+  padding:20px;
+}
+.benzene{
+  width:130px; height:130px;
+  position:relative;
+  flex-shrink:0;
+}
+.benzene svg{ width:100%; height:100%; }
+.benzene .label{
+  position:absolute;
+  font-family:'JetBrains Mono',monospace;
+  font-weight:700;
+  font-size:12px;
+}
+.benzene .l-ipso{ top:-20px; left:50%; transform:translateX(-50%); }
+.benzene .l-ortho{ top:14%; }
+.benzene .l-ortho.right{ right:-46px; }
+.benzene .l-ortho.left{ left:-46px; }
+.benzene .l-meta{ bottom:14%; }
+.benzene .l-meta.right{ right:-46px; }
+.benzene .l-meta.left{ left:-46px; }
+.benzene .l-para{ bottom:-20px; left:50%; transform:translateX(-50%); }
+.product-note{
+  font-size:13.5px;
+  line-height:1.6;
+  color:var(--ink-soft);
+  max-width:420px;
+}
+.product-note strong{ color:var(--ink); }
+.pct{
+  display:inline-block;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11.5px;
+  background:var(--amber);
+  color:#fff;
+  padding:1px 7px;
+  border-radius:10px;
+  margin-left:6px;
+}
+
+.stepper{ display:flex; flex-direction:column; gap:10px; }
+.step-row{ display:flex; gap:10px; align-items:flex-start; }
+.step-dot{
+  flex-shrink:0;
+  width:26px; height:26px; border-radius:50%;
+  background:var(--violet);
+  color:#fff;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700;
+}
+.step-body{
+  font-size:13.5px; line-height:1.55; color:var(--ink-soft);
+  padding-bottom:8px;
+  border-bottom:1px dashed var(--line);
+  flex:1;
+}
+.step-body .eq{
+  font-family:'JetBrains Mono',monospace;
+  color:var(--ink);
+  display:block;
+  margin-bottom:4px;
+  font-size:13px;
+}
+
+.tab-panel{ display:none; }
+.tab-panel.on{ display:block; }
+
+.case-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; }
+.case-card{
+  background:var(--parchment-2);
+  border-radius:var(--radius);
+  padding:14px;
+  cursor:pointer;
+  border:1px solid transparent;
+  transition:border .15s ease, background .15s ease;
+}
+.case-card:hover{ border-color:var(--amber-deep); }
+.case-card.open{ background:#fff; border-color:var(--amber-deep); }
+.case-card h4{ margin:0 0 6px; font-family:'JetBrains Mono',monospace; font-size:12.5px; text-transform:uppercase; letter-spacing:0.03em; }
+.case-card .rev{ font-size:12.5px; line-height:1.5; color:var(--ink-soft); display:none; margin-top:8px; }
+.case-card.open .rev{ display:block; }
+.case-card .ratio{ font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--rust-deep); font-weight:700; }
+
+.switch-wrap{ display:flex; align-items:center; gap:18px; flex-wrap:wrap; }
+.switch{
+  position:relative;
+  width:220px; height:44px;
+  background:var(--ink);
+  border-radius:26px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  padding:4px;
+}
+.switch .knob{
+  width:50%;
+  height:36px;
+  background:var(--amber);
+  border-radius:20px;
+  transition:transform .25s ease;
+  position:relative;
+  z-index:1;
+}
+.switch.right .knob{ transform:translateX(100%); background:var(--violet); }
+.switch .txt{
+  position:absolute;
+  inset:0;
+  display:flex;
+  z-index:2;
+  font-family:'JetBrains Mono',monospace;
+  font-size:10.5px;
+  color:#fff;
+  font-weight:700;
+}
+.switch .txt span{ flex:1; text-align:center; display:flex; align-items:center; justify-content:center; padding:0 4px; text-align:center;}
+.switch-result{ font-size:13.5px; line-height:1.6; color:var(--ink-soft); max-width:420px; }
+.switch-result b{ color:var(--ink); }
+
+.rank-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
+.rank-list li{
+  display:flex; align-items:center; gap:12px;
+  background:var(--parchment-2);
+  border-radius:20px;
+  padding:8px 16px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:13px;
+}
+.rank-list li .bar{
+  height:8px;
+  border-radius:6px;
+  background:linear-gradient(90deg,var(--rust),var(--amber));
+}
+.rank-list li span.tag{ margin-left:auto; font-size:11px; color:var(--ink-soft); }
+
+table.id-table{ width:100%; border-collapse:collapse; font-size:13px; }
+table.id-table th, table.id-table td{
+  text-align:left; padding:10px 12px; border-bottom:1px solid var(--line);
+}
+table.id-table th{ font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.03em; color:var(--ink-soft); }
+table.id-table tr{ cursor:pointer; }
+table.id-table tr:hover td{ background:rgba(185,129,47,0.09); }
+table.id-table tr.sel td{ background:rgba(92,53,102,0.10); font-weight:600; }
+
+/* ============ MINI MAP ============ */
+.map-layout{ display:grid; grid-template-columns:300px 1fr; gap:0; border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; min-height:520px; }
+.map-list{ background:var(--paper-card); border-right:1px solid var(--line); max-height:640px; overflow-y:auto; }
+.map-list button{
+  display:block; width:100%; text-align:left; background:none; border:none;
+  padding:13px 18px; font-family:'JetBrains Mono',monospace; font-size:12.5px;
+  border-bottom:1px solid var(--line); cursor:pointer; color:var(--ink-soft);
+  transition:background .15s ease, color .15s ease;
+}
+.map-list button:hover{ background:var(--parchment-2); color:var(--ink); }
+.map-list button.active{ background:var(--ink); color:var(--amber); }
+.map-viewer{ background:#fff; padding:30px 32px; }
+.map-viewer h3{ font-family:'Fraunces',serif; font-style:italic; font-size:1.5rem; margin:0 0 14px; }
+.map-viewer p{ font-size:14.5px; line-height:1.75; color:var(--ink-soft); }
+.map-placeholder{ color:var(--ink-soft); font-family:'JetBrains Mono',monospace; font-size:13px; }
+
+/* ============ FLASHCARDS ============ */
+.fc-toolbar{ display:flex; gap:10px; margin-bottom:18px; align-items:center; }
+.fc-count{ font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--ink-soft); margin-left:auto; }
+.fc-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:16px; }
+.fc{
+  perspective:1200px;
+  height:170px;
+  cursor:pointer;
+}
+.fc-inner{
+  position:relative; width:100%; height:100%;
+  transition:transform .5s cubic-bezier(.4,.2,.2,1);
+  transform-style:preserve-3d;
+}
+.fc.flip .fc-inner{ transform:rotateY(180deg); }
+.fc-face{
+  position:absolute; inset:0;
+  backface-visibility:hidden;
+  border-radius:var(--radius);
+  padding:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  font-size:13.5px;
+  line-height:1.45;
+  box-shadow:0 3px 0 var(--shadow);
+}
+.fc-face.front{ background:var(--ink); color:var(--parchment); }
+.fc-face.back{ background:var(--amber); color:#fff; transform:rotateY(180deg); }
+.fc-face .tag{
+  position:absolute; top:8px; left:10px;
+  font-family:'JetBrains Mono',monospace; font-size:9.5px; opacity:0.6; letter-spacing:0.05em;
+}
+
+/* ============ QUIZ ============ */
+.quiz-toolbar{ display:flex; gap:10px; align-items:center; margin-bottom:20px; flex-wrap:wrap; }
+.quiz-score{ font-family:'JetBrains Mono',monospace; font-size:13px; background:var(--ink); color:var(--amber); padding:8px 14px; border-radius:20px; }
+.q-card{
+  background:var(--paper-card); border:1px solid var(--line); border-radius:var(--radius);
+  padding:18px 20px; margin-bottom:14px;
+}
+.q-card .qn{ font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--amber-deep); margin-bottom:6px; }
+.q-card .qtext{ font-size:14.5px; font-weight:600; margin-bottom:12px; }
+.opt{
+  display:flex; align-items:center; gap:10px;
+  padding:9px 12px; border:1px solid var(--line); border-radius:var(--radius);
+  margin-bottom:8px; cursor:pointer; font-size:13.5px;
+  transition:background .12s ease;
+}
+.opt:hover{ background:var(--parchment-2); }
+.opt input{ accent-color:var(--violet); }
+.q-card.correct .opt.chosen{ background:rgba(92,53,102,0.15); border-color:var(--violet); }
+.q-card.wrong .opt.chosen{ background:rgba(174,68,28,0.15); border-color:var(--rust); }
+.q-card.answered .opt.right-ans{ border-color:var(--violet); }
+.q-card .fb{ display:none; font-family:'JetBrains Mono',monospace; font-size:11.5px; margin-top:6px; }
+.q-card.answered .fb{ display:block; }
+.q-card.correct .fb{ color:var(--violet-deep); }
+.q-card.wrong .fb{ color:var(--rust-deep); }
+
+.btn{
+  font-family:'JetBrains Mono',monospace;
+  font-size:12.5px; font-weight:600;
+  background:var(--ink); color:var(--parchment);
+  border:none; padding:10px 18px; border-radius:22px; cursor:pointer;
+}
+.btn:hover{ background:var(--amber-deep); }
+.btn.ghost{ background:transparent; color:var(--ink); border:1px solid var(--ink); }
+.btn.ghost:hover{ background:var(--ink); color:var(--parchment); }
+
+footer{
+  position:relative; z-index:2;
+  padding:26px 6vw 40px;
+  border-top:1px solid var(--line);
+  font-family:'JetBrains Mono',monospace;
+  font-size:11.5px;
+  color:var(--ink-soft);
+  display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+}
+
+@media (max-width:720px){
+  .map-layout{ grid-template-columns:1fr; }
+  .map-list{ max-height:220px; border-right:none; border-bottom:1px solid var(--line); }
+}
+@media (prefers-reduced-motion: reduce){
+  *{ animation:none !important; transition:none !important; }
+}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="eyebrow">Organic Chemistry · Arenes</div>
+  <h1 class="title">Study Smart</h1>
+  <p class="subtitle">Aliphatic–aromatic hydrocarbons: structure, nomenclature, Friedel–Crafts chemistry, and the ring/side-chain reactivity split — condensed for review.</p>
+</header>
+
+<nav class="ring-nav">
+  <div class="ring-track" id="ringTrack">
+    <button class="hex-btn active" data-panel="overview"><span class="num">01</span>Overview</button>
+    <button class="hex-btn" data-panel="diagrams"><span class="num">02</span>Interactive<br>Diagrams</button>
+    <button class="hex-btn" data-panel="minimap"><span class="num">03</span>Mini Map</button>
+    <button class="hex-btn" data-panel="flashcards"><span class="num">04</span>Flash Cards</button>
+    <button class="hex-btn" data-panel="quiz"><span class="num">05</span>Quiz Bank</button>
+  </div>
+</nav>
+
+<main>
+
+  <!-- ============ OVERVIEW ============ -->
+  <section id="overview" class="panel active">
+    <div class="section-head">
+      <h2>Overview</h2>
+      <p>Core definitions and rules only — no lecture text.</p>
+    </div>
+    <div class="law-grid" id="lawGrid"></div>
+  </section>
+
+  <!-- ============ DIAGRAMS ============ -->
+  <section id="diagrams" class="panel">
+    <div class="section-head">
+      <h2>Interactive Diagrams</h2>
+      <p>Click, toggle, and step through every scheme in the material.</p>
+    </div>
+
+    <div class="diagram-block">
+      <h3>1 · Ring Reagent Explorer — toluene</h3>
+      <p class="hint">Pick a reagent to see where it attacks and what forms.</p>
+      <div class="btn-row" id="reagentChips"></div>
+      <div class="ring-stage">
+        <div class="benzene">
+          <svg viewBox="0 0 100 100"><polygon points="50,6 90,28 90,72 50,94 10,72 10,28" fill="none" stroke="#1B1712" stroke-width="3"/></svg>
+          <div class="label l-ipso">CH₃</div>
+          <div class="label l-ortho right" id="oR"></div>
+          <div class="label l-ortho left" id="oL"></div>
+          <div class="label l-meta right"></div>
+          <div class="label l-meta left"></div>
+          <div class="label l-para" id="pP"></div>
+        </div>
+        <div class="product-note" id="reagentNote"></div>
+      </div>
+    </div>
+
+    <div class="diagram-block">
+      <h3>2 · Friedel–Crafts Alkylation — mechanism stepper</h3>
+      <p class="hint">RCl + C₆H₆ —AlCl₃→ C₆H₅R + HCl</p>
+      <div class="stepper" id="fcStepper"></div>
+    </div>
+
+    <div class="diagram-block">
+      <h3>3 · Where the carbonium ion comes from</h3>
+      <p class="hint">All three routes generate the same kind of electrophile.</p>
+      <div class="btn-row" id="carbTabs"></div>
+      <div id="carbBody"></div>
+    </div>
+
+    <div class="diagram-block">
+      <h3>4 · Rearrangement case files</h3>
+      <p class="hint">Click a case to reveal which carbonium ion actually reacts.</p>
+      <div class="case-grid" id="caseGrid"></div>
+    </div>
+
+    <div class="diagram-block">
+      <h3>5 · Ring vs. side chain — halogenation control switch</h3>
+      <p class="hint">Same toluene, same Cl₂ — the conditions decide the target.</p>
+      <div class="switch-wrap">
+        <div class="switch" id="haloSwitch">
+          <div class="txt"><span>heat / light</span><span>FeCl₃, dark</span></div>
+          <div class="knob"></div>
+        </div>
+        <div class="switch-result" id="haloResult"></div>
+      </div>
+    </div>
+
+    <div class="diagram-block">
+      <h3>6 · Ease of hydrogen-atom abstraction</h3>
+      <p class="hint">Governs which C–H bond a halogen radical takes first.</p>
+      <ul class="rank-list" id="rankList"></ul>
+    </div>
+
+    <div class="diagram-block">
+      <h3>7 · Identify the unknown — C₈H₁₀, b.p. 137–139 °C</h3>
+      <p class="hint">Click a candidate to compare its oxidation product.</p>
+      <table class="id-table">
+        <thead><tr><th>Candidate</th><th>b.p.</th><th>Oxidation product</th><th>m.p.</th></tr></thead>
+        <tbody id="idTableBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ MINI MAP ============ -->
+  <section id="minimap" class="panel">
+    <div class="section-head">
+      <h2>Mini Map</h2>
+      <p>Click a topic on the left — its notes open here, on the right.</p>
+    </div>
+    <div class="map-layout">
+      <div class="map-list" id="mapList"></div>
+      <div class="map-viewer" id="mapViewer">
+        <p class="map-placeholder">Select a topic on the left to display its notes here.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FLASHCARDS ============ -->
+  <section id="flashcards" class="panel">
+    <div class="section-head">
+      <h2>Flash Cards</h2>
+      <p>Click a card to flip it.</p>
+    </div>
+    <div class="fc-toolbar">
+      <button class="btn ghost" id="shuffleFc">Shuffle</button>
+      <button class="btn ghost" id="flipAll">Flip all</button>
+      <span class="fc-count" id="fcCount"></span>
+    </div>
+    <div class="fc-grid" id="fcGrid"></div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="quiz" class="panel">
+    <div class="section-head">
+      <h2>Quiz Bank</h2>
+      <p>Options are shuffled each time — the correct choice moves.</p>
+    </div>
+    <div class="quiz-toolbar">
+      <button class="btn" id="submitQuiz">Submit answers</button>
+      <button class="btn ghost" id="reshuffleQuiz">New shuffle</button>
+      <span class="quiz-score" id="quizScore">Score: — / —</span>
+    </div>
+    <div id="quizBody"></div>
+  </section>
+
+</main>
+
+<footer>
+  <span>© Anmar Taha. All rights reserved.</span>
+  <span>Study Smart — Arenes review material</span>
+</footer>
+
+<script>
+/* ============================================================
+   NAVIGATION
+============================================================ */
+document.querySelectorAll('.hex-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.hex-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.panel).classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+});
+
+/* ============================================================
+   OVERVIEW — law cards
+============================================================ */
+const laws = [
+  {c:'', t:'What is an arene?', b:['A hydrocarbon with both an <b>aliphatic</b> unit and an <b>aromatic</b> (benzene) unit, e.g. ethylbenzene = ring + CH₂CH₃ side chain.']},
+  {c:'v', t:'Dual reactivity', b:['<b>Ring</b> → electrophilic substitution (benzene-like).','<b>Side chain</b> → free-radical substitution (alkane-like).','Each portion modifies the reactivity <i>and</i> the orientation of attack on the other.']},
+  {c:'', t:'Naming — simple alkylbenzenes', b:['CH₃-benzene = <code>toluene</code> (special name).','Longer chains: alkyl + "-benzene" → ethylbenzene, n-propylbenzene, isobutylbenzene.']},
+  {c:'', t:'Naming — dialkylbenzenes', b:['Dimethylbenzenes = <code>xylenes</code> (o-, m-, p-).','One methyl + one other group → named as a toluene derivative.','Two non-methyl groups → both alkyl names prefixed to "-benzene".']},
+  {c:'', t:'Naming — special / complex cases', b:['Very complex side chain → phenylalkane (C₆H₅– = phenyl).','2+ rings → named as alkane derivatives (diphenylmethane, 1,2-diphenylethane).','C₆H₅CH=CH₂ = <code>styrene</code> (vinylbenzene / phenylethylene).','Alkynylbenzenes named as substituted alkynes (phenylacetylene).']},
+  {c:'r', t:'Physical properties', b:['Low polarity; insoluble in water.','Soluble in nonpolar solvents (ether, CCl₄, ligroin).','Density &lt; water.','b.p. rises ~20–30 °C per added carbon.','m.p. depends on molecular weight <i>and</i> shape.']},
+  {c:'r', t:'Industrial source', b:['Separated directly from <b>coal tar</b>.','Synthesized from petroleum <b>alkanes</b>.','Petroleum is the chief source of benzene, toluene, xylenes for chemicals & fuels.']},
+  {c:'', t:'Preparation 1 — Friedel–Crafts alkylation', b:['ArH + RX —Lewis acid→ ArR + HX.','Directly attaches an alkyl group to the ring.','R may <b>rearrange</b>. Ar–X can never substitute for R–X.']},
+  {c:'', t:'Preparation 2 — side-chain conversion', b:['Reduce a ketone: Ar–CO–R → Ar–CH₂–R.','Clemmensen: Zn(Hg), HCl, heat.','Wolff–Kishner: N₂H₄, strong base, heat.','No rearrangement — ketones come from Friedel–Crafts acylation.']},
+  {c:'v', t:'F–C mechanism (3 steps)', b:['1. RCl + AlCl₃ ⇌ AlCl₄⁻ + R⁺','2. R⁺ + C₆H₆ ⇌ arenium (benzenonium) ion','3. Loses H⁺ → ArR + HCl + AlCl₃ regenerated.','Electrophile = an alkyl <b>carbonium ion</b>.']},
+  {c:'v', t:'Other carbonium-ion sources', b:['ROH + H⁺ ⇌ ROH₂⁺ ⇌ R⁺ + H₂O','C=C + H⁺ ⇌ R⁺','Both alcohols and alkenes alkylate rings — a modification of Friedel–Crafts.']},
+  {c:'v', t:'What a carbonium ion can do', b:['Eliminate H⁺ → alkene.','Rearrange → more stable ion.','Combine with a nucleophile.','Add to an alkene → bigger ion.','Abstract a hydride ion.','Alkylate an aromatic ring.']},
+  {c:'v', t:'Rearrangement rule', b:['A less stable 1° carbonium ion undergoes a 1,2-hydride/alkyl shift to a more stable 2°/3° ion <i>before</i> it reacts.','Explains why n-propyl chloride gives mostly isopropylbenzene, not n-propylbenzene.']},
+  {c:'r', t:'Limitations of F–C alkylation', b:['Danger of polysubstitution.','Alkyl group may rearrange.','Aryl halides cannot replace alkyl halides.','Deactivated rings (less reactive than halobenzenes) fail.','–NH₂ / –NHR / –NR₂ rings poison the Lewis acid catalyst.']},
+  {c:'', t:'Reactions of alkylbenzenes — map', b:['Hydrogenation → ring becomes cyclohexane (Ni, Pt, or Pd).','Oxidation → side chain becomes –COOH.','Ring: electrophilic substitution (alkyl = activating, o/p-director).','Chain: free-radical substitution (halogenation).']},
+  {c:'', t:'Oxidation rule', b:['Hot KMnO₄ (or K₂Cr₂O₇, dilute HNO₃) burns <i>any</i> side chain down to a single –COOH, whatever its length.','Used to (a) synthesize aromatic acids, (b) identify an unknown alkylbenzene.']},
+  {c:'r', t:'Ring halogenation', b:['X₂ / FeX₃ (dark) → transfers X⁺ (electrophile).','Gives chiefly ortho + para haloalkylbenzene — electrophilic aromatic substitution.']},
+  {c:'r', t:'Side-chain halogenation', b:['X₂ / heat or light, no catalyst → forms X• radical.','Attacks the <b>benzylic</b> C–H almost exclusively — free-radical substitution.','Ease of H-abstraction: benzylic ≈ allylic &gt; 3° &gt; 2° &gt; 1° &gt; CH₄, vinylic.']},
+  {c:'', t:'The control rule', b:['<b>Atom</b> (X•, heat/light) → attacks the side chain.','<b>Ion</b> (X⁺, Lewis-acid catalyst, dark) → attacks the ring.']},
+];
+const lawGrid = document.getElementById('lawGrid');
+laws.forEach(l=>{
+  const el = document.createElement('div');
+  el.className = 'law-card'+(l.c?(' '+l.c):'');
+  el.innerHTML = `<h3>${l.t}</h3><ul>${l.b.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+  lawGrid.appendChild(el);
+});
+
+/* ============================================================
+   DIAGRAMS — 1. Ring reagent explorer
+============================================================ */
+const reagents = [
+  {key:'nitration', label:'HNO₃ / H₂SO₄', o:'NO₂', p:'NO₂', pct:'chief products', note:'Nitration introduces –NO₂. Because of the methyl group it happens <b>faster</b> than on benzene itself, mostly at ortho and para.'},
+  {key:'sulfonation', label:'H₂SO₄ / SO₃', o:'SO₃H', p:'SO₃H', pct:'o + p', note:'Sulfonation gives o- and p-toluenesulfonic acid. Alkyl groups activate and direct ortho/para.'},
+  {key:'alkylation', label:'CH₃X / AlCl₃', o:'CH₃', p:'CH₃', pct:'o + p xylene', note:'A second Friedel–Crafts alkylation gives o-xylene and p-xylene — temperature can shift the ratio.'},
+  {key:'halogenation', label:'X₂ / FeX₃', o:'X', p:'X', pct:'o + p', note:'Ring halogenation (X = Cl, Br) with a Lewis-acid catalyst — electrophilic substitution, o/p mixture.'},
+];
+const reagentChips = document.getElementById('reagentChips');
+function paintReagent(r){
+  document.getElementById('oR').textContent = r.o;
+  document.getElementById('oL').textContent = r.o;
+  document.getElementById('pP').textContent = r.p;
+  document.getElementById('reagentNote').innerHTML = `<strong>${r.label}</strong> on toluene <span class="pct">${r.pct}</span><br>${r.note}`;
+}
+reagents.forEach((r,i)=>{
+  const b=document.createElement('button');
+  b.className='chip'+(i===0?' on':'');
+  b.textContent=r.label;
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('#reagentChips .chip').forEach(c=>c.classList.remove('on'));
+    b.classList.add('on');
+    paintReagent(r);
+  });
+  reagentChips.appendChild(b);
+});
+paintReagent(reagents[0]);
+
+/* ============================================================
+   DIAGRAMS — 2. F-C mechanism stepper
+============================================================ */
+const fcSteps = [
+  {eq:'RCl + AlCl₃ ⇌ AlCl₄⁻ + R⁺', txt:'Aluminum chloride abstracts the halogen from the alkyl halide, generating a free alkyl carbonium ion. Other Lewis acids (BF₃, FeCl₃, HF) can do the same job.'},
+  {eq:'R⁺ + C₆H₆ ⇌ C₆H₆R⁺ (arenium ion)', txt:'The carbonium ion — the electrophile — attacks the benzene ring, forming a resonance-stabilized arenium (benzenonium) intermediate.'},
+  {eq:'C₆H₆R⁺ + AlCl₄⁻ ⇌ C₆H₅R + HCl + AlCl₃', txt:'The ring loses a proton to restore aromaticity. HCl is released and the AlCl₃ catalyst is regenerated — the net result is ArR + HCl.'},
+];
+const fcStepper = document.getElementById('fcStepper');
+fcSteps.forEach((s,i)=>{
+  const row=document.createElement('div');
+  row.className='step-row';
+  row.innerHTML=`<div class="step-dot">${i+1}</div><div class="step-body"><span class="eq">${s.eq}</span>${s.txt}</div>`;
+  fcStepper.appendChild(row);
+});
+
+/* ============================================================
+   DIAGRAMS — 3. Carbonium ion sources tabs
+============================================================ */
+const carbSources = [
+  {key:'halide', label:'From alkyl halide', eq:'R–X + AlCl₃ ⇌ R⁺ + AlCl₄⁻', txt:'The classic Friedel–Crafts electrophile. Any Lewis acid (AlCl₃, BF₃, FeCl₃, HF) can pull the halogen off.'},
+  {key:'alcohol', label:'From alcohol', eq:'R–OH + H⁺ ⇌ R–OH₂⁺ ⇌ R⁺ + H₂O', txt:'Protonation turns the poor leaving group (OH⁻) into a good one (H₂O), releasing the same carbonium ion.'},
+  {key:'alkene', label:'From alkene', eq:'C=C + H⁺ ⇌ –C–C⁺–H', txt:'Protonation of a double bond generates a carbonium ion directly — the basis of industrial alkylation with alkenes.'},
+];
+const carbTabs=document.getElementById('carbTabs');
+const carbBody=document.getElementById('carbBody');
+function paintCarb(c){
+  carbBody.innerHTML = `<div class="stepper"><div class="step-row"><div class="step-dot">→</div><div class="step-body" style="border-bottom:none;"><span class="eq">${c.eq}</span>${c.txt}<br><br><i>All three carbonium ions go on to alkylate the aromatic ring — a modification of Friedel–Crafts alkylation.</i></div></div></div>`;
+}
+carbSources.forEach((c,i)=>{
+  const b=document.createElement('button');
+  b.className='chip'+(i===0?' on':'');
+  b.textContent=c.label;
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('#carbTabs .chip').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    paintCarb(c);
+  });
+  carbTabs.appendChild(b);
+});
+paintCarb(carbSources[0]);
+
+/* ============================================================
+   DIAGRAMS — 4. Rearrangement case files
+============================================================ */
+const cases = [
+  {name:'n-Propyl chloride', ratio:'n-propylbenzene 35% · isopropylbenzene 65%', txt:'The 1° carbonium ion undergoes a 1,2-hydride shift to the more stable 2° ion before it attacks the ring — so the rearranged product dominates.'},
+  {name:'n-Butyl chloride', ratio:'n-butylbenzene 34% · sec-butylbenzene 66%', txt:'Same story: a hydride shift converts the 1° ion to a more stable 2° ion, which is the one that mostly alkylates the ring.'},
+  {name:'Isobutyl chloride', ratio:'tert-butylbenzene — only product', txt:'The 1° ion rearranges completely to the far more stable 3° ion via a methyl shift, so no unrearranged product is seen at all.'},
+  {name:'Neopentyl alcohol', ratio:'tert-pentylbenzene — only product', txt:'Even starting from an alcohol (not a halide), the initial 1° ion rearranges by a methyl shift to a 3° ion before alkylating benzene.'},
+];
+const caseGrid=document.getElementById('caseGrid');
+cases.forEach(c=>{
+  const el=document.createElement('div');
+  el.className='case-card';
+  el.innerHTML=`<h4>${c.name}</h4><div class="ratio">click to reveal product</div><div class="rev"><b>${c.ratio}</b><br>${c.txt}</div>`;
+  el.addEventListener('click',()=>el.classList.toggle('open'));
+  caseGrid.appendChild(el);
+});
+
+/* ============================================================
+   DIAGRAMS — 5. Halogenation control switch
+============================================================ */
+const haloSwitch=document.getElementById('haloSwitch');
+const haloResult=document.getElementById('haloResult');
+function paintHalo(right){
+  haloSwitch.classList.toggle('right', right);
+  if(!right){
+    haloResult.innerHTML = '<b>Heat or light, no catalyst</b> → Cl₂ splits into Cl• radicals. A radical attacks the <b>side chain</b> at the benzylic carbon → free-radical substitution (e.g. α-phenylethyl chloride).';
+  } else {
+    haloResult.innerHTML = '<b>FeCl₃, in the dark</b> → Cl₂ is polarized to transfer Cl⁺. The electrophile attacks the <b>ring</b> → electrophilic substitution, chiefly ortho + para (e.g. o-/p-chlorotoluene).';
+  }
+}
+haloSwitch.addEventListener('click',()=>paintHalo(!haloSwitch.classList.contains('right')));
+paintHalo(false);
+
+/* ============================================================
+   DIAGRAMS — 6. Ease of H-abstraction ranking
+============================================================ */
+const rank = [
+  {t:'Benzylic / Allylic', w:100},
+  {t:'3° C–H', w:78},
+  {t:'2° C–H', w:58},
+  {t:'1° C–H', w:38},
+  {t:'CH₄ / vinylic', w:18},
+];
+const rankList=document.getElementById('rankList');
+rank.forEach((r,i)=>{
+  const li=document.createElement('li');
+  li.innerHTML=`<span>${i+1}.</span><span>${r.t}</span><span class="bar" style="width:${r.w}px"></span><span class="tag">${i===0?'preferred':(i===rank.length-1?'least reactive':'')}</span>`;
+  rankList.appendChild(li);
+});
+
+/* ============================================================
+   DIAGRAMS — 7. Identify the unknown table
+============================================================ */
+const idData = [
+  {name:'o-Xylene', bp:'144°', prod:'Phthalic acid', mp:'231°'},
+  {name:'m-Xylene', bp:'139°', prod:'Isophthalic acid', mp:'348°'},
+  {name:'p-Xylene', bp:'138°', prod:'Terephthalic acid', mp:'300° (subl.)'},
+  {name:'Ethylbenzene', bp:'136°', prod:'Benzoic acid', mp:'122°'},
+];
+const idBody=document.getElementById('idTableBody');
+idData.forEach(row=>{
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td>${row.name}</td><td>${row.bp}</td><td>${row.prod}</td><td>${row.mp}</td>`;
+  tr.addEventListener('click',()=>{
+    document.querySelectorAll('#idTableBody tr').forEach(x=>x.classList.remove('sel'));
+    tr.classList.add('sel');
+  });
+  idBody.appendChild(tr);
+});
+
+/* ============================================================
+   MINI MAP
+============================================================ */
+const mapTopics = [
+  {t:'Definition of arenes', b:'Hydrocarbons containing both aliphatic and aromatic units are collectively called arenes. Ethylbenzene, for example, contains a benzene ring plus an aliphatic (ethyl) side chain.'},
+  {t:'Dual reactivity', b:'Arenes show two independent sets of chemical behavior: the ring undergoes the electrophilic substitution characteristic of benzene, while the side chain undergoes the free-radical substitution characteristic of alkanes. Crucially, each portion of the molecule modifies the properties of the other — the alkyl group changes the aromatic reactivity of the ring, and the ring changes the aliphatic reactivity of the side chain.'},
+  {t:'Nitration of ethylbenzene', b:'Treatment with HNO₃/H₂SO₄ puts a nitro group on the ring (o- and p-nitroethylbenzene, chief products). Because of the ethyl group, nitration happens more readily than with benzene itself, and occurs chiefly ortho and para to the ethyl group.'},
+  {t:'Side-chain bromination of ethylbenzene', b:'Br₂ with heat or light puts a bromine atom on the side chain, giving 1-bromo-1-phenylethane (α-phenylethyl bromide) as essentially the only product — because of the ring, bromination happens more readily than with plain ethane, and exclusively at the carbon nearer the ring.'},
+  {t:'Nomenclature — alkylbenzenes', b:'Methylbenzene is called toluene. Longer chains are named by prefixing the alkyl group to "-benzene": ethylbenzene, n-propylbenzene, isobutylbenzene.'},
+  {t:'Nomenclature — dialkylbenzenes', b:'The simplest dialkylbenzenes, the dimethylbenzenes, are called xylenes: o-xylene, m-xylene, p-xylene. Dialkylbenzenes containing one methyl group are named as toluene derivatives (e.g. p-ethyltoluene); others are named by prefixing both alkyl group names to "-benzene" (e.g. m-ethylisopropylbenzene).'},
+  {t:'Nomenclature — complex and polycyclic cases', b:'A compound with a very complicated side chain may be named as a phenylalkane (C₆H₅– = phenyl), e.g. 2-methyl-3-phenylpentane. Compounds with more than one benzene ring are almost always named as alkane derivatives: diphenylmethane, 1,2-diphenylethane.'},
+  {t:'Alkenyl- and alkynylbenzenes', b:'The simplest alkenylbenzene, C₆H₅CH=CH₂, has the special name styrene (also vinylbenzene or phenylethylene). Others are usually named as substituted alkenes. Alkynylbenzenes are named as substituted alkynes, e.g. phenylacetylene.'},
+  {t:'Physical properties of arenes', b:'Low polarity; insoluble in water but quite soluble in nonpolar solvents like ether, carbon tetrachloride, or ligroin. Almost always less dense than water. Boiling points rise with increasing molecular weight (about 20–30° per carbon atom). Melting points depend on both molecular weight and molecular shape.'},
+  {t:'Industrial source of alkylbenzenes', b:'Aromatic compounds are separated as such from coal tar, and are also synthesized from the alkanes of petroleum. Petroleum is the chief source of the enormous quantities of benzene, toluene, and the xylenes needed for chemicals and fuels — half of the toluene and xylenes produced are used in high-test gasoline, in a sense replacing the inferior aliphatic compounds from which they were made.'},
+  {t:'Preparation 1 — Friedel–Crafts alkylation', b:'Extremely useful because it directly attaches an alkyl group to the aromatic ring: ArH + RX —Lewis acid→ ArR + HX. This method can involve rearrangement of R.'},
+  {t:'Preparation 2 — side-chain conversion', b:'Aromatic compounds with aliphatic side chains that are not simple alkyl groups can be converted into alkylbenzenes. The most important route is reduction of ketones, either by amalgamated zinc and HCl (Clemmensen reduction) or by hydrazine and strong base (Wolff–Kishner reduction). This is useful because the needed ketones are readily available through a modification of Friedel–Crafts (acid chlorides). Unlike Friedel–Crafts alkylation, this route does not involve rearrangement.'},
+  {t:'Friedel–Crafts alkylation, in practice', b:'Adding a little anhydrous AlCl₃ to a mixture of benzene and methyl chloride causes a vigorous reaction: HCl gas evolves and toluene can be isolated. The alkyl halide may be more complex than methyl, and halogens other than chlorine work too; alcohols or (especially industrially) alkenes may also be used. Substituted alkyl halides such as benzyl chloride also work. Because of the low reactivity of a halogen attached to an aromatic ring, aryl halides (Ar–X) can never substitute for alkyl halides (R–X).'},
+  {t:'Scope of the ring and catalyst', b:'The ring being alkylated may be benzene itself, certain substituted benzenes (chiefly alkylbenzenes and halobenzenes), or more complex aromatic systems like naphthalene and anthracene. In place of aluminum chloride, other Lewis acids can be used — notably BF₃, HF, and phosphoric acid. The reaction is simply run by mixing the three components; the main practical issues are moderating the reaction by cooling and trapping the hydrogen halide gas.'},
+  {t:'Limiting polysubstitution', b:'Since attaching an alkyl side chain makes the ring more reactive toward further attack, steps must be taken to limit substitution to monoalkylation — as with alkane halogenation, this is done by using an excess of the aromatic hydrocarbon, so a carbonium ion is more likely to meet an unsubstituted ring than a substituted one. Frequently the aromatic compound serves as both solvent and reactant.'},
+  {t:'Making polyaromatic compounds', b:'From polyhalogenated alkanes it is possible to prepare compounds containing more than one aromatic ring, e.g. 2 C₆H₆ + CH₂Cl₂ —AlCl₃→ diphenylmethane + 2HCl; 3 C₆H₆ + CHCl₃ —AlCl₃→ triphenylmethane + 3HCl; 3 C₆H₆ + CCl₄ —AlCl₃→ triphenylchloromethane + 3HCl.'},
+  {t:'Mechanism of Friedel–Crafts alkylation', b:'Both proposed mechanisms are electrophilic aromatic substitution, differing in the nature of the electrophile. One mechanism: (1) RCl + AlCl₃ ⇌ AlCl₄⁻ + R⁺; (2) R⁺ + C₆H₆ ⇌ arenium ion; (3) loss of H⁺ regenerates AlCl₃ and gives ArR + HCl. The electrophile is an alkyl carbonium ion; AlCl₃’s job is to generate it by abstracting the halogen. Other Lewis acids (BF₃, FeCl₃, HF) can play the same role.'},
+  {t:'Carbonium ions from alcohols and alkenes', b:'By analogy, benzene should also be attacked by carbonium ions generated other ways — by the action of acid on alcohols (ROH + H⁺ ⇌ ROH₂⁺ ⇌ R⁺ + H₂O) and on alkenes (C=C + H⁺ ⇌ carbonium ion). This is correct: alcohols and alkenes, in the presence of acid, alkylate aromatic rings as a modification of Friedel–Crafts, e.g. C₆H₆ + tert-butyl alcohol —H₂SO₄→ tert-butylbenzene; C₆H₆ + isobutylene —H₂SO₄→ tert-butylbenzene.'},
+  {t:'Rearrangement in Friedel–Crafts alkylation', b:'Because the mechanism involves a carbonium ion, Friedel–Crafts alkylation is often accompanied by rearrangement. Alkylbenzenes with rearranged alkyl groups form, sometimes as the sole product. In each case, a less stable (1°) carbonium ion rearranges by a 1,2-shift to a more stable (2° or 3°) carbonium ion: n-propyl chloride → mostly isopropylbenzene (65–69%); n-butyl chloride → mostly sec-butylbenzene (66%); isobutyl chloride → tert-butylbenzene only; neopentyl alcohol → tert-pentylbenzene only.'},
+  {t:'What a carbonium ion can do', b:'A carbonium ion may: (a) eliminate a hydrogen ion to form an alkene; (b) rearrange to a more stable carbonium ion; (c) combine with a negative ion or other basic molecule; (d) add to an alkene to form a larger carbonium ion; (e) abstract a hydride ion from an alkane; (f) alkylate an aromatic ring.'},
+  {t:'Limitations of Friedel–Crafts alkylation', b:'Three core limitations: (a) danger of polysubstitution; (b) possibility that the alkyl group rearranges; (c) aryl halides cannot replace alkyl halides. Further limitations: (d) a ring less reactive than a halobenzene will not undergo the reaction, since the carbonium-ion electrophile R⁺ is a weaker nucleophile-seeker than NO₂⁺ or other strong electrophiles; (e) rings bearing –NH₂, –NHR, or –NR₂ do not undergo Friedel–Crafts alkylation, partly because the strongly basic nitrogen ties up the Lewis acid needed to ionize the alkyl halide.'},
+  {t:'Reactions of alkylbenzenes — overview', b:'Aside from hydrogenation and oxidation, reactions of alkylbenzenes involve either (a) electrophilic substitution in the aromatic ring, or (b) free-radical substitution in the aliphatic side chain. The two questions that matter are which conditions send the attack to which portion, and how each portion of the molecule modifies the reactions of the other.'},
+  {t:'Hydrogenation', b:'Ethylbenzene + 3H₂ —Ni, Pt, or Pd→ ethylcyclohexane. The aromatic ring is reduced to a cyclohexane ring under catalytic hydrogenation.'},
+  {t:'Oxidation of the side chain', b:'Benzene and alkanes are unreactive toward typical oxidizing agents (KMnO₄, K₂Cr₂O₇), but the benzene ring makes an attached aliphatic side chain quite susceptible to oxidation. The side chain is oxidized all the way down to the ring, leaving only a carboxyl group (–COOH) to mark where it was — regardless of chain length (e.g. n-butylbenzene —hot KMnO₄→ benzoic acid + CO₂). KMnO₄ is most common; K₂Cr₂O₇ or dilute HNO₃ also work. This reaction both (a) synthesizes carboxylic acids and (b) identifies alkylbenzenes.'},
+  {t:'Synthesis of carboxylic acids by oxidation', b:'p-Xylene —KMnO₄→ terephthalic acid (1,4-benzenedicarboxylic acid). p-Nitrotoluene —Cr₂O₇²⁻,H⁺→ p-nitrobenzoic acid. This is one of the most useful ways to prepare an aromatic carboxylic acid.'},
+  {t:'Identification of alkylbenzenes by oxidation', b:'The number and position of side chains can often be determined by oxidizing to the corresponding acid and comparing melting points (or derivative melting points). Example: an unknown C₈H₁₀ (b.p. 137–139°) could be o-, m-, or p-xylene, or ethylbenzene — oxidation gives phthalic acid (m.p. 231°), isophthalic acid (m.p. 348°), terephthalic acid (m.p. 300°, subl.), or benzoic acid (m.p. 122°) respectively, which are easily told apart.'},
+  {t:'Electrophilic substitution in the ring', b:'Because of its electron-releasing effect, an alkyl group activates the ring it is attached to and directs incoming electrophiles ortho and para: toluene undergoes nitration (o-/p-nitrotoluene), sulfonation (o-/p-toluenesulfonic acid), further Friedel–Crafts alkylation (o-/p-xylene, temperature-sensitive ratio), and ring halogenation (X₂, FeX₃ → o-/p-halotoluene).'},
+  {t:'Substitution in the side chain (Friedel–Crafts halogenation)', b:'Toluene + Cl₂ (heat or light) proceeds stepwise: toluene → benzyl chloride (CH₂Cl) → benzal chloride (CHCl₂) → benzotrichloride (CCl₃). These are important intermediates for alcohols, aldehydes, and related compounds. Ethylbenzene + Cl₂ (heat/light) gives mainly α-phenylethyl chloride, with only a minor amount of the β-isomer.'},
+  {t:'Ring vs. side chain — controlling the site of halogenation', b:'Alkylbenzenes offer two areas for halogen attack: the ring and the side chain, and the reaction conditions decide which is attacked. Alkane-type (side-chain) halogenation needs conditions that generate halogen atoms — high temperature or light. Benzene-type (ring) halogenation instead involves transfer of positive halogen, promoted by acid (Lewis-acid) catalysts like ferric chloride. In short: a halogen atom (Cl•) attacks the side chain; a halogen ion/positive halogen (Cl⁺, via FeCl₃) attacks the ring.'},
+  {t:'Toluene halogenation — ring products', b:'Toluene + Cl₂, Fe or FeCl₃ gives o-chlorotoluene (58%) and p-chlorotoluene (42%) — like nitration and sulfonation, ring halogenation gives chiefly the ortho and para isomers. Similar results occur with other alkylbenzenes and with bromine as well as chlorine.'},
+  {t:'Side-chain halogenation and benzylic hydrogens', b:'Side-chain halogenation, like alkane halogenation, can give polyhalogenated products, and even monohalogenation may give a mixture of isomers if more than one position is available. Hydrogen atoms on the carbon joined directly to the ring are called benzylic hydrogens, and their abstraction is greatly preferred: bromination of ethylbenzene gives 1-bromo-1-phenylethane as essentially the only product (not the 2-bromo isomer). Chlorination shows the same benzylic preference (about 91% at the benzylic position, 9% elsewhere for ethylbenzene).'},
+  {t:'Ease of hydrogen-atom abstraction', b:'The reactivity order for abstraction of hydrogen atoms by a halogen radical is: benzylic ≈ allylic > 3° > 2° > 1° > CH₄, vinylic. This ordering explains why side-chain halogenation is both faster and more selective than plain alkane halogenation.'},
+];
+const mapList=document.getElementById('mapList');
+const mapViewer=document.getElementById('mapViewer');
+mapTopics.forEach((m,i)=>{
+  const b=document.createElement('button');
+  b.textContent=m.t;
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('#mapList button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    mapViewer.innerHTML=`<h3>${m.t}</h3><p>${m.b}</p>`;
+  });
+  mapList.appendChild(b);
+});
+
+/* ============================================================
+   FLASHCARDS
+============================================================ */
+const flashcards = [
+  {f:'Definition of an arene', b:'A hydrocarbon containing both an aliphatic unit and an aromatic (benzene) unit.'},
+  {f:'What reactivity does the ring show?', b:'Electrophilic substitution, like benzene.'},
+  {f:'What reactivity does the side chain show?', b:'Free-radical substitution, like an alkane.'},
+  {f:'Special name for methylbenzene', b:'Toluene.'},
+  {f:'Special name for the dimethylbenzenes', b:'Xylenes (o-, m-, p-).'},
+  {f:'Special name for C₆H₅CH=CH₂', b:'Styrene (also vinylbenzene / phenylethylene).'},
+  {f:'How is a compound with 2+ benzene rings usually named?', b:'As a derivative of an alkane (e.g. diphenylmethane, 1,2-diphenylethane).'},
+  {f:'Are arenes polar or nonpolar? Soluble in water?', b:'Low polarity; insoluble in water; soluble in nonpolar solvents like ether or CCl₄.'},
+  {f:'How does b.p. change with molecular weight in arenes?', b:'Rises with increasing MW, about 20–30 °C per added carbon.'},
+  {f:'Two industrial sources of alkylbenzenes', b:'Coal tar (direct separation) and petroleum alkanes (synthesis).'},
+  {f:'General equation for Friedel–Crafts alkylation', b:'ArH + RX —Lewis acid (e.g. AlCl₃)→ ArR + HX.'},
+  {f:'Why can\'t aryl halides be used in Friedel–Crafts alkylation?', b:'Because the halogen on an aromatic ring is too unreactive to ionize (Ar–X can never substitute for R–X).'},
+  {f:'Two ways to convert a ketone side chain into an alkyl group', b:'Clemmensen reduction (Zn(Hg), HCl, heat) or Wolff–Kishner reduction (N₂H₄, strong base, heat).'},
+  {f:'Does the ketone-reduction route rearrange?', b:'No — unlike Friedel–Crafts alkylation, it involves no rearrangement.'},
+  {f:'Step 1 of the Friedel–Crafts mechanism', b:'RCl + AlCl₃ ⇌ AlCl₄⁻ + R⁺ (generates the carbonium-ion electrophile).'},
+  {f:'What is the electrophile in Friedel–Crafts alkylation?', b:'An alkyl carbonium ion, R⁺.'},
+  {f:'Besides alkyl halides, what two other sources give carbonium ions that alkylate rings?', b:'Alcohols (with H⁺) and alkenes (with H⁺).'},
+  {f:'List three things a carbonium ion can do', b:'Any three of: eliminate H⁺ to form an alkene, rearrange, combine with a nucleophile, add to an alkene, abstract a hydride ion, alkylate an aromatic ring.'},
+  {f:'Why does n-propyl chloride + benzene/AlCl₃ give mostly isopropylbenzene?', b:'The 1° carbonium ion rearranges by a 1,2-hydride shift to the more stable 2° ion before reacting.'},
+  {f:'Name three limitations of Friedel–Crafts alkylation', b:'Any three of: risk of polysubstitution, possible rearrangement, aryl halides can\'t substitute for alkyl halides, deactivated rings don\'t react, amino-substituted rings poison the catalyst.'},
+  {f:'Why do –NH₂ / –NHR / –NR₂ rings fail in Friedel–Crafts alkylation?', b:'The basic nitrogen ties up the Lewis acid catalyst, preventing it from ionizing the alkyl halide.'},
+  {f:'What does hot KMnO₄ do to an alkylbenzene side chain?', b:'Oxidizes it all the way down to the ring, leaving only –COOH, regardless of chain length.'},
+  {f:'Two uses of side-chain oxidation', b:'Synthesizing aromatic carboxylic acids, and identifying an unknown alkylbenzene.'},
+  {f:'Conditions that send halogenation to the RING', b:'X₂ with a Lewis-acid catalyst (e.g. FeCl₃), in the dark — transfers X⁺.'},
+  {f:'Conditions that send halogenation to the SIDE CHAIN', b:'X₂ with heat or light, no catalyst — generates X• radicals.'},
+  {f:'What position does side-chain halogenation prefer?', b:'The benzylic carbon (attached directly to the ring).'},
+  {f:'Order of ease of H-atom abstraction', b:'Benzylic ≈ allylic > 3° > 2° > 1° > CH₄, vinylic.'},
+  {f:'Toluene + Cl₂/heat/light, stepwise products', b:'Benzyl chloride → benzal chloride → benzotrichloride.'},
+  {f:'Toluene + Cl₂/FeCl₃ products', b:'o-Chlorotoluene (58%) and p-chlorotoluene (42%).'},
+  {f:'What does an alkyl group do to ring electrophilic substitution?', b:'Activates the ring and directs incoming electrophiles ortho and para.'},
+  {f:'Product of ethylbenzene + 3H₂ / Ni,Pt,or Pd', b:'Ethylcyclohexane.'},
+  {f:'Oxidation product used to distinguish o-, m-, p-xylene, and ethylbenzene', b:'Phthalic acid, isophthalic acid, terephthalic acid, and benzoic acid respectively — told apart by melting point.'},
+];
+let fcOrder = flashcards.map((_,i)=>i);
+const fcGrid=document.getElementById('fcGrid');
+function renderFc(){
+  fcGrid.innerHTML='';
+  fcOrder.forEach(idx=>{
+    const c=flashcards[idx];
+    const el=document.createElement('div');
+    el.className='fc';
+    el.innerHTML=`<div class="fc-inner">
+      <div class="fc-face front"><span class="tag">Q</span>${c.f}</div>
+      <div class="fc-face back"><span class="tag">A</span>${c.b}</div>
+    </div>`;
+    el.addEventListener('click',()=>el.classList.toggle('flip'));
+    fcGrid.appendChild(el);
+  });
+  document.getElementById('fcCount').textContent = flashcards.length + ' cards';
+}
+document.getElementById('shuffleFc').addEventListener('click',()=>{
+  for(let i=fcOrder.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [fcOrder[i],fcOrder[j]]=[fcOrder[j],fcOrder[i]]; }
+  renderFc();
+});
+document.getElementById('flipAll').addEventListener('click',()=>{
+  document.querySelectorAll('.fc').forEach(c=>c.classList.toggle('flip'));
+});
+renderFc();
+
+/* ============================================================
+   QUIZ BANK — 32 MCQs, options shuffled on each render
+============================================================ */
+const quizData = [
+  {q:'Arenes are hydrocarbons that contain:', opts:['Only aromatic rings','Only aliphatic chains','Both aliphatic and aromatic units','Only cyclic alkanes'], a:2},
+  {q:'The ring of ethylbenzene undergoes which type of reaction, characteristic of benzene?', opts:['Free-radical substitution','Nucleophilic addition','Electrophilic substitution','Electrophilic addition'], a:2},
+  {q:'The side chain of ethylbenzene undergoes which type of reaction, characteristic of ethane?', opts:['Electrophilic substitution','Free-radical substitution','Nucleophilic substitution','Electrophilic addition'], a:1},
+  {q:'The special name for methylbenzene is:', opts:['Xylene','Styrene','Toluene','Cumene'], a:2},
+  {q:'o-, m-, and p-dimethylbenzene are collectively known as:', opts:['Toluenes','Xylenes','Cresols','Styrenes'], a:1},
+  {q:'The special name for C₆H₅CH=CH₂ is:', opts:['Toluene','Cumene','Styrene','Xylene'], a:2},
+  {q:'A compound with two benzene rings, such as C₆H₅CH₂C₆H₅, is generally named as a derivative of:', opts:['Benzene','An alkane','An alkyl halide','Styrene'], a:1},
+  {q:'Arenes are, in general:', opts:['Highly polar and water-soluble','Low polarity and insoluble in water','Ionic and water-soluble','Strong acids'], a:1},
+  {q:'Boiling points of arenes typically rise per added carbon by about:', opts:['1–2 °C','5–10 °C','20–30 °C','60–70 °C'], a:2},
+  {q:'The two chief industrial sources of alkylbenzenes are:', opts:['Coal tar and petroleum','Seawater and natural gas','Fermentation and coal tar','Petroleum and seawater'], a:0},
+  {q:'The general Friedel–Crafts alkylation equation is:', opts:['ArX + RH → ArR + HX','ArH + RX —Lewis acid→ ArR + HX','ArOH + RX → ArR + HX','ArH + RH → ArR + H₂'], a:1},
+  {q:'In Friedel–Crafts alkylation, which halide can NOT be used in place of R–X?', opts:['Primary alkyl halide','Secondary alkyl halide','Aryl halide (Ar–X)','Benzylic halide'], a:2},
+  {q:'Which of these is NOT typically used as a Lewis acid catalyst in Friedel–Crafts alkylation?', opts:['AlCl₃','BF₃','HF','NaOH'], a:3},
+  {q:'The two methods used for side-chain conversion of a ketone into an alkyl group are:', opts:['Clemmensen and Wolff–Kishner reduction','Friedel–Crafts and Grignard','Hydroboration and ozonolysis','Cannizzaro and Claisen'], a:0},
+  {q:'Clemmensen reduction uses:', opts:['N₂H₄ and strong base, heat','Zn(Hg), HCl, heat','LiAlH₄','H₂/Ni'], a:1},
+  {q:'Wolff–Kishner reduction uses:', opts:['Zn(Hg) and HCl','N₂H₄ and strong base, heat','NaBH₄','KMnO₄'], a:1},
+  {q:'Unlike Friedel–Crafts alkylation, the ketone-reduction route to alkylbenzenes:', opts:['Always gives polysubstitution','Involves no rearrangement','Requires aryl halides','Cannot use AlCl₃ at all'], a:1},
+  {q:'In the Friedel–Crafts mechanism, the first step generates:', opts:['A free radical','A carbanion','An alkyl carbonium ion','A nitronium ion'], a:2},
+  {q:'The role of AlCl₃ in Friedel–Crafts alkylation is to:', opts:['Donate a proton','Abstract the halogen from R–X to form R⁺','Reduce the ring','Oxidize the side chain'], a:1},
+  {q:'Besides alkyl halides, carbonium ions that alkylate benzene rings can also come from:', opts:['Carboxylic acids and esters only','Alcohols and alkenes (with acid)','Amines and amides','Ethers only'], a:1},
+  {q:'A carbonium ion may do all of the following EXCEPT:', opts:['Eliminate H⁺ to form an alkene','Rearrange to a more stable ion','Spontaneously become a carbanion','Alkylate an aromatic ring'], a:2},
+  {q:'n-Propyl chloride + benzene/AlCl₃ gives mostly isopropylbenzene because:', opts:['The reaction is under thermodynamic control only','The 1° carbonium ion rearranges to the more stable 2° ion','n-Propylbenzene is unstable at room temperature','AlCl₃ selectively destroys 1° products'], a:1},
+  {q:'Isobutyl chloride + benzene/AlCl₃ gives, as the only product:', opts:['n-butylbenzene','sec-butylbenzene','tert-butylbenzene','isobutylbenzene (unrearranged)'], a:2},
+  {q:'Which is NOT a limitation of Friedel–Crafts alkylation?', opts:['Danger of polysubstitution','Possible rearrangement of the alkyl group','Aryl halides cannot replace alkyl halides','It always requires high pressure hydrogenation'], a:3},
+  {q:'Friedel–Crafts alkylation fails on rings bearing –NH₂, –NHR, or –NR₂ mainly because:', opts:['These rings are too electron-rich','The basic nitrogen ties up the Lewis acid catalyst','Nitrogen destroys the ring aromaticity','These rings are always deactivated'], a:1},
+  {q:'Hydrogenation of ethylbenzene (3H₂, Ni/Pt/Pd) gives:', opts:['Toluene','Cyclohexane','Ethylcyclohexane','Ethylbenzene remains unchanged'], a:2},
+  {q:'Hot KMnO₄ oxidation of an alkylbenzene side chain, regardless of its length, gives:', opts:['A ketone on the ring','An alcohol on the ring','A single –COOH group on the ring','No reaction at all'], a:2},
+  {q:'Oxidation of p-xylene with KMnO₄ gives:', opts:['Benzoic acid','Terephthalic acid','Phthalic acid','Isophthalic acid'], a:1},
+  {q:'Side-chain oxidation of an alkylbenzene is used for:', opts:['Only fuel synthesis','Synthesis of carboxylic acids and identification of alkylbenzenes','Only ring halogenation','Only Friedel–Crafts acylation'], a:1},
+  {q:'Ring halogenation of toluene (X₂, FeX₃, dark) occurs mainly at which positions?', opts:['Meta only','Ortho and para','Ipso only','All positions equally'], a:1},
+  {q:'Side-chain halogenation of alkylbenzenes (X₂, heat or light) proceeds by attack of:', opts:['A halide ion, X⁻','A positive halogen, X⁺','A halogen atom (radical), X•','A halonium bridge'], a:2},
+  {q:'The conditions that send halogen attack to the RING rather than the side chain are:', opts:['Heat or light, no catalyst','A Lewis-acid catalyst such as FeCl₃, in the dark','Very low temperature only','UV light with no catalyst'], a:1},
+  {q:'Hydrogen atoms on the carbon directly attached to the aromatic ring are called:', opts:['Vinylic hydrogens','Allylic hydrogens','Benzylic hydrogens','Ipso hydrogens'], a:2},
+  {q:'The correct order of ease of hydrogen-atom abstraction is:', opts:['1° > 2° > 3° > benzylic','CH₄ > 1° > 2° > 3° > benzylic','Benzylic ≈ allylic > 3° > 2° > 1° > CH₄, vinylic','Vinylic > benzylic > 3° > 2° > 1°'], a:2},
+  {q:'Bromination of ethylbenzene (Br₂, heat/light) gives almost exclusively:', opts:['2-bromo-1-phenylethane','1-bromo-1-phenylethane','A ring-brominated product','A mixture of ring and chain products in equal amounts'], a:1},
+  {q:'An alkyl group attached to a benzene ring is, for electrophilic aromatic substitution, a(n):', opts:['Deactivating, meta-director','Activating, ortho/para-director','Deactivating, ortho/para-director','Activating, meta-director'], a:1},
+  {q:'Chlorination of toluene with Cl₂/FeCl₃ (dark) gives o-chlorotoluene and p-chlorotoluene in roughly:', opts:['58% / 42%','100% / 0%','20% / 80%','50% / 50% exactly'], a:0},
+  {q:'An unknown C₈H₁₀ oxidized to give terephthalic acid (m.p. 300°, subl.) must be:', opts:['o-Xylene','m-Xylene','p-Xylene','Ethylbenzene'], a:2},
+];
+
+let quizOrder = [];
+function buildQuiz(){
+  quizOrder = quizData.map((_,i)=>i);
+  const body = document.getElementById('quizBody');
+  body.innerHTML='';
+  quizOrder.forEach((qi,renderIdx)=>{
+    const q = quizData[qi];
+    const opts = q.opts.map((t,i)=>({t, correct:i===q.a}));
+    for(let i=opts.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [opts[i],opts[j]]=[opts[j],opts[i]]; }
+    const card=document.createElement('div');
+    card.className='q-card';
+    card.dataset.qi = qi;
+    card.innerHTML = `<div class="qn">Question ${renderIdx+1} of ${quizOrder.length}</div>
+      <div class="qtext">${q.q}</div>
+      <div class="opts">${opts.map((o,i)=>`
+        <label class="opt" data-correct="${o.correct}">
+          <input type="radio" name="q${qi}" value="${i}"><span>${o.t}</span>
+        </label>`).join('')}</div>
+      <div class="fb"></div>`;
+    body.appendChild(card);
+  });
+  document.getElementById('quizScore').textContent = 'Score: — / ' + quizOrder.length;
+}
+document.getElementById('submitQuiz').addEventListener('click',()=>{
+  let score=0;
+  document.querySelectorAll('.q-card').forEach(card=>{
+    const chosen = card.querySelector('input:checked');
+    const labels = card.querySelectorAll('.opt');
+    labels.forEach(l=>l.classList.remove('chosen'));
+    card.classList.add('answered');
+    if(!chosen){
+      card.classList.add('wrong');
+      card.querySelector('.fb').textContent = 'No answer selected.';
+      return;
+    }
+    const chosenLabel = chosen.closest('.opt');
+    chosenLabel.classList.add('chosen');
+    const isCorrect = chosenLabel.dataset.correct === 'true';
+    if(isCorrect){ score++; card.classList.add('correct'); card.classList.remove('wrong'); card.querySelector('.fb').textContent='Correct.'; }
+    else{ card.classList.add('wrong'); card.classList.remove('correct'); card.querySelector('.fb').textContent='Not quite — check the highlighted answer.'; }
+  });
+  document.getElementById('quizScore').textContent = 'Score: ' + score + ' / ' + quizOrder.length;
+});
+document.getElementById('reshuffleQuiz').addEventListener('click', buildQuiz);
+buildQuiz();
+</script>
+</body>
+</html>
