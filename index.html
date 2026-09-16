@@ -613,6 +613,7 @@ footer{
       <h2>Flash Cards</h2>
       <p>Click a card to flip it.</p>
     </div>
+    <div class="btn-row" id="fcLevelRow"></div>
     <div class="fc-toolbar">
       <button class="btn ghost" id="shuffleFc">Shuffle</button>
       <button class="btn ghost" id="flipAll">Flip all</button>
@@ -627,6 +628,7 @@ footer{
       <h2>Quiz Bank</h2>
       <p>Options are shuffled each time — the correct choice moves.</p>
     </div>
+    <div class="btn-row" id="quizLevelRow"></div>
     <div class="quiz-toolbar">
       <button class="btn" id="submitQuiz">Submit answers</button>
       <button class="btn ghost" id="reshuffleQuiz">New shuffle</button>
@@ -881,44 +883,187 @@ mapTopics.forEach((m,i)=>{
 });
 
 /* ============================================================
-   FLASHCARDS
+   FLASHCARDS — 3 difficulty levels
 ============================================================ */
-const flashcards = [
-  {f:'Definition of an arene', b:'A hydrocarbon containing both an aliphatic unit and an aromatic (benzene) unit.'},
-  {f:'What reactivity does the ring show?', b:'Electrophilic substitution, like benzene.'},
-  {f:'What reactivity does the side chain show?', b:'Free-radical substitution, like an alkane.'},
-  {f:'Special name for methylbenzene', b:'Toluene.'},
-  {f:'Special name for the dimethylbenzenes', b:'Xylenes (o-, m-, p-).'},
-  {f:'Special name for C₆H₅CH=CH₂', b:'Styrene (also vinylbenzene / phenylethylene).'},
-  {f:'How is a compound with 2+ benzene rings usually named?', b:'As a derivative of an alkane (e.g. diphenylmethane, 1,2-diphenylethane).'},
-  {f:'Are arenes polar or nonpolar? Soluble in water?', b:'Low polarity; insoluble in water; soluble in nonpolar solvents like ether or CCl₄.'},
-  {f:'How does b.p. change with molecular weight in arenes?', b:'Rises with increasing MW, about 20–30 °C per added carbon.'},
-  {f:'Two industrial sources of alkylbenzenes', b:'Coal tar (direct separation) and petroleum alkanes (synthesis).'},
-  {f:'General equation for Friedel–Crafts alkylation', b:'ArH + RX —Lewis acid (e.g. AlCl₃)→ ArR + HX.'},
-  {f:'Why can\'t aryl halides be used in Friedel–Crafts alkylation?', b:'Because the halogen on an aromatic ring is too unreactive to ionize (Ar–X can never substitute for R–X).'},
-  {f:'Two ways to convert a ketone side chain into an alkyl group', b:'Clemmensen reduction (Zn(Hg), HCl, heat) or Wolff–Kishner reduction (N₂H₄, strong base, heat).'},
-  {f:'Does the ketone-reduction route rearrange?', b:'No — unlike Friedel–Crafts alkylation, it involves no rearrangement.'},
-  {f:'Step 1 of the Friedel–Crafts mechanism', b:'RCl + AlCl₃ ⇌ AlCl₄⁻ + R⁺ (generates the carbonium-ion electrophile).'},
-  {f:'What is the electrophile in Friedel–Crafts alkylation?', b:'An alkyl carbonium ion, R⁺.'},
-  {f:'Besides alkyl halides, what two other sources give carbonium ions that alkylate rings?', b:'Alcohols (with H⁺) and alkenes (with H⁺).'},
-  {f:'List three things a carbonium ion can do', b:'Any three of: eliminate H⁺ to form an alkene, rearrange, combine with a nucleophile, add to an alkene, abstract a hydride ion, alkylate an aromatic ring.'},
-  {f:'Why does n-propyl chloride + benzene/AlCl₃ give mostly isopropylbenzene?', b:'The 1° carbonium ion rearranges by a 1,2-hydride shift to the more stable 2° ion before reacting.'},
-  {f:'Name three limitations of Friedel–Crafts alkylation', b:'Any three of: risk of polysubstitution, possible rearrangement, aryl halides can\'t substitute for alkyl halides, deactivated rings don\'t react, amino-substituted rings poison the catalyst.'},
-  {f:'Why do –NH₂ / –NHR / –NR₂ rings fail in Friedel–Crafts alkylation?', b:'The basic nitrogen ties up the Lewis acid catalyst, preventing it from ionizing the alkyl halide.'},
-  {f:'What does hot KMnO₄ do to an alkylbenzene side chain?', b:'Oxidizes it all the way down to the ring, leaving only –COOH, regardless of chain length.'},
-  {f:'Two uses of side-chain oxidation', b:'Synthesizing aromatic carboxylic acids, and identifying an unknown alkylbenzene.'},
-  {f:'Conditions that send halogenation to the RING', b:'X₂ with a Lewis-acid catalyst (e.g. FeCl₃), in the dark — transfers X⁺.'},
-  {f:'Conditions that send halogenation to the SIDE CHAIN', b:'X₂ with heat or light, no catalyst — generates X• radicals.'},
-  {f:'What position does side-chain halogenation prefer?', b:'The benzylic carbon (attached directly to the ring).'},
-  {f:'Order of ease of H-atom abstraction', b:'Benzylic ≈ allylic > 3° > 2° > 1° > CH₄, vinylic.'},
-  {f:'Toluene + Cl₂/heat/light, stepwise products', b:'Benzyl chloride → benzal chloride → benzotrichloride.'},
-  {f:'Toluene + Cl₂/FeCl₃ products', b:'o-Chlorotoluene (58%) and p-chlorotoluene (42%).'},
-  {f:'What does an alkyl group do to ring electrophilic substitution?', b:'Activates the ring and directs incoming electrophiles ortho and para.'},
-  {f:'Product of ethylbenzene + 3H₂ / Ni,Pt,or Pd', b:'Ethylcyclohexane.'},
-  {f:'Oxidation product used to distinguish o-, m-, p-xylene, and ethylbenzene', b:'Phthalic acid, isophthalic acid, terephthalic acid, and benzoic acid respectively — told apart by melting point.'},
-];
+const flashcardsByLevel = {
+  1: [
+  {f:"What is an arene?", b:"A hydrocarbon containing both an aliphatic unit and an aromatic (benzene) unit."},
+  {f:"Give the text's example of an arene.", b:"Ethylbenzene \u2014 a benzene ring plus a CH2CH3 (ethyl) side chain."},
+  {f:"What type of substitution does the ring of ethylbenzene undergo?", b:"Electrophilic substitution, characteristic of benzene."},
+  {f:"What type of substitution does the side chain of ethylbenzene undergo?", b:"Free-radical substitution, characteristic of ethane."},
+  {f:"Which reagent nitrates ethylbenzene?", b:"Nitric acid and sulfuric acid (HNO3/H2SO4)."},
+  {f:"What are the chief products of nitrating ethylbenzene?", b:"o-Nitroethylbenzene and p-nitroethylbenzene."},
+  {f:"Which reagent brominates the side chain of ethylbenzene?", b:"Br2 with heat or light."},
+  {f:"What is the only product of side-chain bromination of ethylbenzene?", b:"1-Bromo-1-phenylethane (\u03b1-phenylethyl bromide)."},
+  {f:"What is the special name for methylbenzene?", b:"Toluene."},
+  {f:"What are the dimethylbenzenes called?", b:"Xylenes."},
+  {f:"Name the three xylene isomers.", b:"o-Xylene, m-xylene, and p-xylene."},
+  {f:"What is the special name for C6H5CH=CH2?", b:"Styrene."},
+  {f:"Give two other names for styrene.", b:"Vinylbenzene and phenylethylene."},
+  {f:"What is phenylacetylene?", b:"C6H5C\u2261CH, an alkynylbenzene named as a substituted alkyne."},
+  {f:"What is diphenylmethane?", b:"C6H5CH2C6H5 \u2014 a compound with two benzene rings, named as an alkane derivative."},
+  {f:"What is 1,2-diphenylethane?", b:"C6H5CH2CH2C6H5."},
+  {f:"Are arenes polar or nonpolar?", b:"Low polarity."},
+  {f:"Are arenes soluble in water?", b:"No \u2014 they are insoluble in water."},
+  {f:"Name three nonpolar solvents that dissolve arenes.", b:"Ether, carbon tetrachloride, and ligroin."},
+  {f:"Are arenes denser or less dense than water?", b:"Almost always less dense than water."},
+  {f:"How much does the boiling point of arenes rise per added carbon?", b:"About 20\u201330\u00b0C."},
+  {f:"What does the melting point of an arene depend on?", b:"Molecular weight and molecular shape."},
+  {f:"Name two industrial sources of alkylbenzenes.", b:"Coal tar and petroleum."},
+  {f:"What is petroleum the chief source of, among arenes?", b:"Enormous quantities of benzene, toluene, and the xylenes."},
+  {f:"How are toluene and xylenes partly used in industry?", b:"Half of them are utilized in high-test gasoline."},
+  {f:"Name the two general methods for preparing alkylbenzenes.", b:"Friedel\u2013Crafts alkylation and conversion of the side chain."},
+  {f:"What does Friedel\u2013Crafts alkylation permit?", b:"The direct attachment of an alkyl group to the aromatic ring."},
+  {f:"Does Friedel\u2013Crafts alkylation involve rearrangement?", b:"Yes, this method involves rearrangement."},
+  {f:"Write the general Friedel\u2013Crafts alkylation equation.", b:"ArH + RX \u2014Lewis acid\u2192 ArR + HX."},
+  {f:"Name three Lewis acids used in Friedel\u2013Crafts alkylation.", b:"AlCl3, BF3, and HF."},
+  {f:"Can aryl halides (Ar\u2013X) replace R\u2013X in Friedel\u2013Crafts alkylation?", b:"No."},
+  {f:"Which two named reductions accomplish side-chain conversion of a ketone?", b:"Clemmensen reduction and Wolff\u2013Kishner reduction."},
+  {f:"What are the conditions of Clemmensen reduction?", b:"Amalgamated zinc and HCl, with heat."},
+  {f:"What are the conditions of Wolff\u2013Kishner reduction?", b:"Hydrazine (N2H4) and strong base, with heat."},
+  {f:"Does the side-chain-conversion method involve rearrangement?", b:"No \u2014 unlike Friedel\u2013Crafts alkylation."},
+  {f:"What happens when AlCl3 is added to a mixture of benzene and methyl chloride?", b:"A vigorous reaction occurs, HCl gas is evolved, and toluene is isolated."},
+  {f:"Give an example of a substituted alkyl halide usable in Friedel\u2013Crafts alkylation.", b:"Benzyl chloride (C6H5CH2Cl)."},
+  {f:"Besides benzene, what other ring systems can undergo Friedel\u2013Crafts alkylation?", b:"Naphthalene and anthracene."},
+  {f:"Name three Lewis acids besides AlCl3 mentioned for Friedel\u2013Crafts alkylation.", b:"BF3, HF, and phosphoric acid."},
+  {f:"How is the Friedel\u2013Crafts alkylation reaction carried out practically?", b:"By simply mixing the three components together."},
+  {f:"How is polysubstitution limited in Friedel\u2013Crafts alkylation?", b:"By using an excess of the aromatic hydrocarbon."},
+  {f:"What forms from 2C6H6 + CH2Cl2 with AlCl3?", b:"Diphenylmethane + 2HCl."},
+  {f:"What forms from 3C6H6 + CHCl3 with AlCl3?", b:"Triphenylmethane + 3HCl."},
+  {f:"What forms from 3C6H6 + CCl4 with AlCl3?", b:"Triphenylchloromethane + 3HCl."},
+  {f:"What is the electrophile in the Friedel\u2013Crafts alkylation mechanism?", b:"An alkyl carbonium ion, R+."},
+  {f:"What is the function of AlCl3 in the Friedel\u2013Crafts mechanism?", b:"To generate the carbonium ion by abstracting the halogen from the alkyl halide."},
+  {f:"Name two sources besides alkyl halides that generate carbonium ions able to alkylate rings.", b:"Alcohols (with acid) and alkenes (with acid)."},
+  {f:"What is the product of benzene + tert-butyl alcohol/H2SO4?", b:"tert-Butylbenzene."},
+  {f:"What is the product of benzene + isobutylene/H2SO4?", b:"tert-Butylbenzene."},
+  {f:"Name two things a carbonium ion may do.", b:"Any two of: eliminate H+ to form an alkene; rearrange; combine with a negative ion; add to an alkene; abstract a hydride ion; alkylate an aromatic ring."},
+  {f:"What kind of shift is typical in carbonium-ion rearrangement?", b:"A 1,2-shift from a less stable ion to a more stable one."},
+  {f:"What is the sole product of isobutyl chloride + benzene/AlCl3?", b:"tert-Butylbenzene."},
+  {f:"Name three limitations of Friedel\u2013Crafts alkylation.", b:"Any three of: danger of polysubstitution; rearrangement of the alkyl group; aryl halides can't replace alkyl halides; deactivated rings fail; amino-substituted rings poison the catalyst."},
+  {f:"Why do rings with \u2013NH2, \u2013NHR, or \u2013NR2 fail in Friedel\u2013Crafts alkylation?", b:"The basic nitrogen ties up the Lewis acid catalyst."},
+  {f:"Besides hydrogenation and oxidation, what two reaction types do alkylbenzenes undergo?", b:"Electrophilic substitution in the ring and free-radical substitution in the side chain."},
+  {f:"What is the product of ethylbenzene + 3H2 (Ni, Pt, or Pd)?", b:"Ethylcyclohexane."},
+  {f:"What is the product of oxidizing ethylbenzene with KMnO4?", b:"Benzoic acid (+ CO2)."},
+  {f:"What functional group remains on the ring after side-chain oxidation?", b:"A carboxyl group (\u2013COOH)."},
+  {f:"Name three oxidizing agents used to oxidize a side chain.", b:"KMnO4, K2Cr2O7, and dilute HNO3."},
+  {f:"What is the product of p-xylene oxidized by KMnO4?", b:"Terephthalic acid (1,4-benzenedicarboxylic acid)."}
+],
+  2: [
+  {f:"Why does nitration of ethylbenzene occur more readily than nitration of benzene itself?", b:"Because the ethyl group activates the ring (electron-releasing), making nitration faster and directing it ortho/para."},
+  {f:"Why does bromination of ethylbenzene's side chain occur more readily than bromination of ethane?", b:"Because the aromatic ring stabilizes the radical formed at the adjacent (benzylic) carbon."},
+  {f:"At which carbon does side-chain bromination of ethylbenzene occur exclusively?", b:"The carbon nearer the ring (the benzylic carbon)."},
+  {f:"How do the ring and the ethyl group modify each other's properties in ethylbenzene?", b:"The ethyl group modifies the aromatic properties of the ring; the ring modifies the aliphatic properties of the side chain."},
+  {f:"How is p-ethyltoluene named, and why?", b:"As a derivative of toluene, since it contains one methyl group plus another alkyl group."},
+  {f:"How is m-ethylisopropylbenzene named?", b:"By prefixing both alkyl group names to \u2013benzene, since neither substituent alone is the defining methyl of a toluene derivative."},
+  {f:"How would a very complicated side chain on benzene be named?", b:"As a phenylalkane (C6H5\u2013 = phenyl), e.g. 2-methyl-3-phenylpentane."},
+  {f:"How are compounds with more than one benzene ring generally named?", b:"As derivatives of alkanes."},
+  {f:"How are most alkenylbenzenes (other than styrene) named?", b:"Generally as substituted alkenes, occasionally as substituted benzenes."},
+  {f:"Give an example of an alkenylbenzene named as a substituted alkene.", b:"Allylbenzene (3-phenylpropene) or 2-phenyl-2-butene."},
+  {f:"Why is petroleum important beyond simply being a chemical feedstock for arenes?", b:"Toluene and xylenes from petroleum also serve as high-test gasoline components, replacing inferior aliphatic fuels."},
+  {f:"Why is the ketone-reduction side-chain-conversion method for making alkylbenzenes valuable?", b:"The needed ketones are readily available via a Friedel\u2013Crafts acylation (acid chloride) modification, and the method avoids rearrangement."},
+  {f:"Why can't aryl halides substitute for alkyl halides in Friedel\u2013Crafts alkylation?", b:"The halogen attached to an aromatic ring has low reactivity and cannot be ionized by the Lewis acid."},
+  {f:"Why must an excess of the aromatic hydrocarbon be used in Friedel\u2013Crafts alkylation?", b:"Because the alkylated ring is more reactive than the starting ring, so excess starting material minimizes polysubstitution."},
+  {f:"Why does the aromatic compound often serve as both solvent and reactant?", b:"Because the excess needed to limit polysubstitution is large enough in volume to also act as the solvent."},
+  {f:"List the three mechanistic steps of Friedel\u2013Crafts alkylation.", b:"(1) RCl+AlCl3\u21ccAlCl4\u207b+R+ (2) R++C6H6\u21cc arenium ion (3) loss of H+ regenerates AlCl3 and gives ArR + HCl."},
+  {f:"Why can BF3, FeCl3, and HF replace AlCl3 in the mechanism?", b:"They can all function as Lewis acids that abstract halogen (generate a carbonium ion) in the same way."},
+  {f:"Why do alcohols and alkenes alkylate aromatic rings under acid conditions?", b:"Acid converts them into carbonium ions (R+), the same electrophile as in Friedel\u2013Crafts alkylation."},
+  {f:"Why does n-propyl chloride + benzene/AlCl3 give mostly isopropylbenzene?", b:"The initial 1\u00b0 carbonium ion rearranges via a 1,2-hydride shift to the more stable 2\u00b0 ion before reacting."},
+  {f:"What are the product percentages for n-butyl chloride + benzene/AlCl3?", b:"n-Butylbenzene 34% and sec-butylbenzene 66%."},
+  {f:"Why does neopentyl alcohol + benzene/BF3 give only tert-pentylbenzene?", b:"The initial 1\u00b0 carbonium ion rearranges completely to the more stable 3\u00b0 ion before alkylating the ring."},
+  {f:"Why does a ring less reactive than halobenzene fail to undergo Friedel\u2013Crafts alkylation?", b:"The carbonium ion R+ is a weaker electrophile than NO2+ and other reagents that succeed in electrophilic aromatic substitution."},
+  {f:"Why is oxidation of a side chain more difficult than oxidation of an alkene?", b:"It requires prolonged treatment with hot KMnO4, unlike the more facile oxidation of an alkene."},
+  {f:"What two purposes does side-chain oxidation serve?", b:"Synthesis of carboxylic acids and identification of alkylbenzenes."},
+  {f:"What is the product of p-nitrotoluene oxidized by Cr2O7\u00b2\u207b/H+?", b:"p-Nitrobenzoic acid."},
+  {f:"An unknown C8H10 (b.p. 137\u2013139\u00b0C) oxidizes to phthalic acid (m.p. 231\u00b0). What is it?", b:"o-Xylene."},
+  {f:"An unknown C8H10 oxidizes to isophthalic acid (m.p. 348\u00b0). What is it?", b:"m-Xylene."},
+  {f:"An unknown C8H10 oxidizes to benzoic acid (m.p. 122\u00b0). What is it?", b:"Ethylbenzene."},
+  {f:"Why does an alkyl group direct electrophilic substitution ortho/para on the ring?", b:"Its electron-releasing effect activates the ring and stabilizes the intermediate at the ortho/para positions."},
+  {f:"What conditions cause halogenation of an alkylbenzene to attack the ring?", b:"A Lewis-acid catalyst (e.g. FeCl3), in the absence of light."},
+  {f:"What conditions cause halogenation to attack the side chain instead?", b:"Heat or light, without a Lewis-acid catalyst."},
+  {f:"Why does halogen attack the ring under Lewis-acid catalysis but the side chain under heat/light?", b:"The catalyst promotes transfer of a positive halogen (X+) that the electron-rich ring reacts with, while heat/light generates halogen atoms (X\u2022) that abstract hydrogens."},
+  {f:"What are the percentages of o- and p-chlorotoluene from toluene + Cl2/FeCl3?", b:"o-Chlorotoluene 58% and p-chlorotoluene 42%."},
+  {f:"What is the major product of ethylbenzene + Cl2 (heat/light), and its percentage?", b:"1-Chloro-1-phenylethane, about 91% (with 9% of the 2-chloro isomer)."},
+  {f:"Why is the benzylic position preferred in side-chain halogenation?", b:"The adjacent aromatic ring stabilizes the radical intermediate formed at that carbon."},
+  {f:"State the order of ease of hydrogen-atom abstraction.", b:"Benzylic \u2248 allylic > 3\u00b0 > 2\u00b0 > 1\u00b0 > CH4, vinylic."},
+  {f:"Name the three stepwise chlorination products of toluene's side chain.", b:"Benzyl chloride, benzal chloride, and benzotrichloride."},
+  {f:"Why are benzyl chloride, benzal chloride, and benzotrichloride important?", b:"They are important intermediates in the synthesis of alcohols, aldehydes, and related compounds."},
+  {f:"What orientation do nitration, sulfonation, and ring halogenation of toluene share?", b:"All occur chiefly at the ortho and para positions."},
+  {f:"How does temperature affect the second Friedel\u2013Crafts alkylation of toluene (with CH3X/AlCl3)?", b:"Temperature may affect the ortho/para product ratio."},
+  {f:"Why can't aniline's ring undergo Friedel\u2013Crafts alkylation with AlCl3?", b:"The nitrogen's lone pair complexes with AlCl3, tying up the Lewis acid catalyst."},
+  {f:"Compare ethylbenzene's ring reactivity toward nitration with that of benzene.", b:"Ethylbenzene's ring nitrates more readily, due to the activating ethyl group."},
+  {f:"Compare ethylbenzene's side chain reactivity toward bromination with that of ethane.", b:"Ethylbenzene's side chain brominates more readily, due to the stabilizing effect of the adjacent ring."},
+  {f:"State the 'control rule' for halogen atoms vs. halogen ions on alkylbenzenes.", b:"A halogen atom (X\u2022, heat/light) attacks the side chain; a halogen ion/positive halogen (X+, Lewis-acid catalyst) attacks the ring."},
+  {f:"Theoretically, what two bromination products could ethylbenzene give, and which actually forms?", b:"1-Bromo-1-phenylethane and 2-bromo-1-phenylethane could form; only the benzylic (1-bromo) isomer actually forms."},
+  {f:"What comparison does the text draw between alkylbenzene halogenation and alkene halogenation?", b:"Atoms bring about substitution, just as ions (or molecules that transfer ions) bring about addition in alkenes."},
+  {f:"Why is Friedel\u2013Crafts acylation relevant to alkylbenzene preparation?", b:"It supplies the ketones needed for the Clemmensen/Wolff\u2013Kishner side-chain-conversion route."},
+  {f:"Describe the boiling-point trend for arenes.", b:"Boiling point rises with increasing molecular weight, by about 20\u201330\u00b0C per added carbon."},
+  {f:"Name two ways an alkyl halide besides methyl chloride can vary in Friedel\u2013Crafts alkylation.", b:"It can carry a more complex alkyl group and/or a halogen other than chlorine."},
+  {f:"Why must melting points be used to distinguish the four oxidation products in the identification example?", b:"Because phthalic, isophthalic, terephthalic, and benzoic acids each have distinct, distinguishable melting points."}
+],
+  3: [
+  {f:"Explain, at the level of carbonium-ion stability, why isobutyl chloride gives exclusively tert-butylbenzene with AlCl3.", b:"Isobutyl chloride ionizes to a 1\u00b0 carbonium ion, which undergoes a 1,2-shift to the highly stable 3\u00b0 tert-butyl cation before reacting with benzene; since this rearrangement is both fast and strongly favored, essentially all of the ion rearranges, giving a single (rearranged) product."},
+  {f:"Explain mechanistically why aryl halides cannot generate a carbonium ion the way alkyl halides do in Friedel\u2013Crafts conditions.", b:"The C\u2013X bond in an aryl halide has partial double-bond character from conjugation with the ring \u03c0-system, and the resulting aryl cation would be very unstable (no adjacent stabilization), so the Lewis acid cannot abstract the halide to form a viable electrophile."},
+  {f:"Using the three-step Friedel\u2013Crafts mechanism, explain the role of AlCl4\u207b in the final step.", b:"AlCl4\u207b acts as a base, removing the proton from the arenium intermediate to restore aromaticity, releasing HCl and regenerating AlCl3."},
+  {f:"Why is R+ described as a weaker 'nucleophile-seeker' than NO2+, and what does this explain?", b:"R+ is a less electrophilic species than the nitronium ion; this explains why some rings too deactivated for Friedel\u2013Crafts alkylation can still undergo nitration."},
+  {f:"Explain mechanistically why heat/light (not a Lewis acid) favors side-chain rather than ring halogenation.", b:"Heat or light homolyzes X2 into X\u2022 radical atoms that abstract a benzylic hydrogen in a radical-chain process; no ring-seeking electrophile is generated, so the ring is untouched."},
+  {f:"Why does FeCl3 specifically promote ring halogenation over side-chain halogenation?", b:"FeCl3 is a Lewis acid that polarizes the X\u2013X bond, generating an effectively positive halogen (X+) attracted to the electron-rich aromatic \u03c0 system, initiating electrophilic aromatic substitution rather than radical abstraction."},
+  {f:"Rationalize the order benzylic\u2248allylic>3\u00b0>2\u00b0>1\u00b0>CH4, vinylic in terms of radical stability.", b:"Benzylic and allylic radicals are stabilized by resonance delocalization into the ring or double bond; 3\u00b0>2\u00b0>1\u00b0 reflects hyperconjugative/inductive stabilization; vinylic and methyl radicals have no such stabilization and are hardest to form."},
+  {f:"Explain why n-propyl chloride + benzene/AlCl3 gives a 35:65 mixture rather than a single product.", b:"Some of the initial 1\u00b0 carbonium ion reacts with benzene before rearranging (giving n-propylbenzene), while the rest rearranges via a 1,2-hydride shift to the more stable 2\u00b0 ion before reacting (giving isopropylbenzene)."},
+  {f:"Why does isobutyl chloride give a single product, unlike n-propyl chloride?", b:"Its 1\u00b0 ion rearranges to a much more stable 3\u00b0 ion (a bigger stability gain than a 1\u00b0\u21922\u00b0 shift), so essentially all of it rearranges before reacting, leaving no unrearranged product."},
+  {f:"Explain exactly how an amino-substituted ring poisons the AlCl3 catalyst.", b:"The nitrogen lone pair is strongly basic and forms a dative bond to the electron-deficient aluminum, giving a stable amine\u2013AlCl3 complex that removes AlCl3 from the catalytic cycle."},
+  {f:"Distinguish, mechanistically, the electrophile attacking the ring in halogenation from the electrophile in nitration.", b:"In halogenation with FeCl3 the electrophile is a polarized/positive halogen; in nitration it is the nitronium ion (NO2+) \u2014 both are electron-deficient species undergoing electrophilic aromatic substitution but are chemically distinct."},
+  {f:"Why does the side chain get oxidized all the way to \u2013COOH regardless of its original length?", b:"Under prolonged strong oxidation, every benzylic and subsequent C\u2013H/C\u2013C bond is progressively attacked, since the benzylic position is especially reactive, until only the ring-stabilized carboxyl carbon remains."},
+  {f:"Why is a carboxyl group, not a ketone or alcohol, the stable end point of side-chain oxidation?", b:"Oxidation continues under the vigorous, prolonged conditions used until the chain is degraded to the most oxidized, thermodynamically stable carbon attached to the ring, with further carbons lost as CO2."},
+  {f:"Explain why nitration of ethylbenzene occurs mainly ortho/para, not meta, to the ethyl group.", b:"The electron-releasing ethyl group increases electron density most at ortho and para positions in the arenium intermediate, stabilizing those transition states preferentially over the meta pathway."},
+  {f:"Why is excess aromatic hydrocarbon, not excess alkyl halide, used to control polysubstitution?", b:"The newly formed alkylbenzene is more reactive toward further attack than the starting arene; using excess starting arene statistically favors a carbonium ion encountering an unsubstituted ring."},
+  {f:"Why do alcohols and alkenes require acid catalysis to alkylate aromatic rings?", b:"Protonation converts the OH into a good leaving group (as H2O) or protonates the alkene directly, generating the same carbonium-ion electrophile required to attack the ring."},
+  {f:"What common feature underlies the three Friedel\u2013Crafts-type alkylation routes (alkyl halide, alcohol, alkene)?", b:"All three ultimately generate the same reactive intermediate, R+, via different means of removing a leaving group or adding a proton."},
+  {f:"Explain, using radical-stability arguments, why side-chain bromination of ethylbenzene is regioselective for the benzylic carbon.", b:"Abstraction of a benzylic hydrogen produces a radical whose unpaired electron delocalizes into the aromatic \u03c0 system, far more stable than the radical from the terminal carbon, so nearly all product forms via the benzylic pathway."},
+  {f:"Predict and justify the major product if n-propylbenzene is treated with Cl2/heat or light.", b:"Chlorination occurs almost exclusively at the benzylic carbon, giving 1-chloro-1-phenylpropane, because that C\u2013H bond is by far the easiest to abstract due to resonance stabilization of the resulting radical."},
+  {f:"What does 'temperature may affect orientation' in toluene's second alkylation suggest about kinetic vs. thermodynamic control?", b:"It suggests the o-/p-xylene ratio can shift with temperature \u2014 at some temperatures the kinetically favored isomer predominates, while at others thermodynamic equilibration shifts the ratio."},
+  {f:"Why does the text say ring halogenation gives 'chiefly,' not exclusively, ortho/para products?", b:"A small amount of meta product may still form, since the preference reflects greater kinetic/electronic stabilization of the arenium intermediate rather than an absolute exclusion of other positions."},
+  {f:"What experimental evidence shows two distinct electrophilic species are responsible for side-chain vs. ring halogenation?", b:"The same starting material and halogen give completely different product distributions depending solely on light/heat versus a Lewis-acid catalyst in the dark."},
+  {f:"Why can Cl2 give totally different products from the same alkylbenzene?", b:"Cl2 can be activated homolytically (giving Cl\u2022 radicals for hydrogen abstraction) or in a polarized/electrophilic fashion (giving a ring-attacking species), so the activation pathway determines the product."},
+  {f:"Why is the ketone-reduction route preferred over Friedel\u2013Crafts alkylation for building a straight, unrearranged chain?", b:"Friedel\u2013Crafts alkylation proceeds through a carbonium ion that can rearrange, whereas reduction of a ketone's carbonyl carbon involves no carbocation intermediate, so the carbon skeleton is preserved."},
+  {f:"Why would direct Friedel\u2013Crafts alkylation with n-butyl chloride be a poor way to make n-butylbenzene?", b:"It gives mostly (66%) rearranged sec-butylbenzene due to 1\u00b0\u21922\u00b0 carbonium-ion rearrangement, rather than the desired n-butylbenzene (34%)."},
+  {f:"Why do different alkylbenzene isomers necessarily give different, distinguishable oxidation products?", b:"Oxidation strips each side chain to a carboxyl group at its original ring position, so the constitutionally distinct o-, m-, and p- patterns are preserved and yield constitutionally distinct (differently melting) acids."},
+  {f:"Why does terephthalic acid sublime at a high melting point while its ortho and meta isomers simply melt?", b:"Its highly symmetric, linear structure allows efficient packing and strong lattice stability, giving it an unusually high melting point where sublimation competes with conventional melting."},
+  {f:"Why does the aromatic reactant serve 'double duty' as solvent and reactant in Friedel\u2013Crafts alkylation?", b:"Avoiding polysubstitution mechanistically requires a large molar excess of arene, and that same excess is, in volume, sufficient to also serve as the solvent."},
+  {f:"Why can halobenzenes be alkylated by Friedel\u2013Crafts conditions while amine-substituted rings cannot?", b:"Alkylation's electrophile (R+) can still react with a mildly deactivated ring like halobenzene, but amine rings fail for a different (non-electronic) reason \u2014 the nitrogen poisons the catalyst by complexing AlCl3."},
+  {f:"Explain why the same alkyl group both activates the ring toward electrophiles and stabilizes a benzylic radical.", b:"The alkyl group's C\u2013H bonds hyperconjugate with the ring, donating electron density that activates it toward electrophiles, while the same conjugative overlap stabilizes a radical generated at the adjacent benzylic carbon."},
+  {f:"Predict the ring-halogenation product distribution for ethylbenzene under FeCl3/dark conditions.", b:"Predominantly ortho- and para-chloroethylbenzene, analogous to the ~58%/42% pattern seen for toluene."},
+  {f:"What does 'R may rearrange' in the general Friedel\u2013Crafts equation imply about predicting products?", b:"The product cannot be predicted from the alkyl halide's structure alone; it must be inferred from the relative stabilities of the possible (including rearranged) carbonium ions."},
+  {f:"Why does bromination of ethylbenzene's side chain give one pure product while chlorination gives a 91:9 mixture?", b:"Bromine atoms are less reactive and more selective than chlorine atoms, so bromination discriminates almost perfectly for the more stable benzylic radical, while chlorine still abstracts a small fraction elsewhere."},
+  {f:"Why would using excess AlCl3 instead of excess benzene fail to control polysubstitution?", b:"AlCl3 is a catalyst, not consumed stoichiometrically; increasing it accelerates carbonium-ion generation for both starting and product arenes without changing the relative statistical chance of hitting an unsubstituted ring."},
+  {f:"Why can a ring be reactive enough for nitration but too weak a nucleophile for Friedel\u2013Crafts alkylation?", b:"Nitration's electrophile (NO2+) is much more reactive than the comparatively weak carbonium-ion electrophile of alkylation, so alkylation requires a more electron-rich ring than nitration does."},
+  {f:"How does resonance/double-bond character explain why chlorobenzene resists Lewis-acid ionization compared to an alkyl chloride?", b:"A chlorine lone pair conjugates into the ring, giving the C\u2013Cl bond partial double-bond character that strengthens it, unlike an alkyl C\u2013Cl bond, which ionizes far more readily."},
+  {f:"Why can prolonged hot KMnO4 fully oxidize even a bulky or branched side chain to \u2013COOH?", b:"Oxidative cleavage proceeds stepwise from the benzylic position inward, generating new oxidizable termini at each stage regardless of branching, until only the ring-attached carboxyl carbon survives."},
+  {f:"Contrast the electronic character of the species attacking in Friedel\u2013Crafts alkylation versus side-chain halogenation.", b:"The Friedel\u2013Crafts electrophile (R+) is a fully formed cation seeking \u03c0-electron density in a two-electron process; the halogen atom (X\u2022) is a neutral radical seeking one electron via homolytic abstraction."},
+  {f:"Why does excess unsubstituted arene favor a carbonium ion reacting with an unsubstituted rather than substituted ring?", b:"Excess arene keeps the ratio of unsubstituted to substituted molecules available for collision high, so statistically the electrophile reacts with an unsubstituted molecule far more often."},
+  {f:"Summarize the parallel the text draws between alkylbenzene halogenation and alkene halogenation.", b:"Atoms (radicals) tend to bring about substitution, while ions (or molecules that transfer ions) tend to bring about addition (in alkenes) or ring substitution (in arenes)."}
+]
+};
+const fcLevelMeta = {1:'Level 1 · Easy (60)', 2:'Level 2 · Medium (50)', 3:'Level 3 · Hard (40)'};
+let currentFcLevel = 1;
+let flashcards = flashcardsByLevel[currentFcLevel];
 let fcOrder = flashcards.map((_,i)=>i);
 const fcGrid=document.getElementById('fcGrid');
+const fcLevelRow=document.getElementById('fcLevelRow');
+Object.keys(fcLevelMeta).forEach(lvl=>{
+  const b=document.createElement('button');
+  b.className='chip'+(Number(lvl)===currentFcLevel?' on':'');
+  b.textContent=fcLevelMeta[lvl];
+  b.dataset.level=lvl;
+  b.addEventListener('click',()=>{
+    currentFcLevel=Number(lvl);
+    flashcards=flashcardsByLevel[currentFcLevel];
+    fcOrder=flashcards.map((_,i)=>i);
+    document.querySelectorAll('#fcLevelRow .chip').forEach(c=>c.classList.remove('on'));
+    b.classList.add('on');
+    renderFc();
+  });
+  fcLevelRow.appendChild(b);
+});
 function renderFc(){
   fcGrid.innerHTML='';
   fcOrder.forEach(idx=>{
@@ -944,51 +1089,173 @@ document.getElementById('flipAll').addEventListener('click',()=>{
 renderFc();
 
 /* ============================================================
-   QUIZ BANK — 32 MCQs, options shuffled on each render
+   QUIZ BANK — 3 difficulty levels, options shuffled on each render
 ============================================================ */
-const quizData = [
-  {q:'Arenes are hydrocarbons that contain:', opts:['Only aromatic rings','Only aliphatic chains','Both aliphatic and aromatic units','Only cyclic alkanes'], a:2},
-  {q:'The ring of ethylbenzene undergoes which type of reaction, characteristic of benzene?', opts:['Free-radical substitution','Nucleophilic addition','Electrophilic substitution','Electrophilic addition'], a:2},
-  {q:'The side chain of ethylbenzene undergoes which type of reaction, characteristic of ethane?', opts:['Electrophilic substitution','Free-radical substitution','Nucleophilic substitution','Electrophilic addition'], a:1},
-  {q:'The special name for methylbenzene is:', opts:['Xylene','Styrene','Toluene','Cumene'], a:2},
-  {q:'o-, m-, and p-dimethylbenzene are collectively known as:', opts:['Toluenes','Xylenes','Cresols','Styrenes'], a:1},
-  {q:'The special name for C₆H₅CH=CH₂ is:', opts:['Toluene','Cumene','Styrene','Xylene'], a:2},
-  {q:'A compound with two benzene rings, such as C₆H₅CH₂C₆H₅, is generally named as a derivative of:', opts:['Benzene','An alkane','An alkyl halide','Styrene'], a:1},
-  {q:'Arenes are, in general:', opts:['Highly polar and water-soluble','Low polarity and insoluble in water','Ionic and water-soluble','Strong acids'], a:1},
-  {q:'Boiling points of arenes typically rise per added carbon by about:', opts:['1–2 °C','5–10 °C','20–30 °C','60–70 °C'], a:2},
-  {q:'The two chief industrial sources of alkylbenzenes are:', opts:['Coal tar and petroleum','Seawater and natural gas','Fermentation and coal tar','Petroleum and seawater'], a:0},
-  {q:'The general Friedel–Crafts alkylation equation is:', opts:['ArX + RH → ArR + HX','ArH + RX —Lewis acid→ ArR + HX','ArOH + RX → ArR + HX','ArH + RH → ArR + H₂'], a:1},
-  {q:'In Friedel–Crafts alkylation, which halide can NOT be used in place of R–X?', opts:['Primary alkyl halide','Secondary alkyl halide','Aryl halide (Ar–X)','Benzylic halide'], a:2},
-  {q:'Which of these is NOT typically used as a Lewis acid catalyst in Friedel–Crafts alkylation?', opts:['AlCl₃','BF₃','HF','NaOH'], a:3},
-  {q:'The two methods used for side-chain conversion of a ketone into an alkyl group are:', opts:['Clemmensen and Wolff–Kishner reduction','Friedel–Crafts and Grignard','Hydroboration and ozonolysis','Cannizzaro and Claisen'], a:0},
-  {q:'Clemmensen reduction uses:', opts:['N₂H₄ and strong base, heat','Zn(Hg), HCl, heat','LiAlH₄','H₂/Ni'], a:1},
-  {q:'Wolff–Kishner reduction uses:', opts:['Zn(Hg) and HCl','N₂H₄ and strong base, heat','NaBH₄','KMnO₄'], a:1},
-  {q:'Unlike Friedel–Crafts alkylation, the ketone-reduction route to alkylbenzenes:', opts:['Always gives polysubstitution','Involves no rearrangement','Requires aryl halides','Cannot use AlCl₃ at all'], a:1},
-  {q:'In the Friedel–Crafts mechanism, the first step generates:', opts:['A free radical','A carbanion','An alkyl carbonium ion','A nitronium ion'], a:2},
-  {q:'The role of AlCl₃ in Friedel–Crafts alkylation is to:', opts:['Donate a proton','Abstract the halogen from R–X to form R⁺','Reduce the ring','Oxidize the side chain'], a:1},
-  {q:'Besides alkyl halides, carbonium ions that alkylate benzene rings can also come from:', opts:['Carboxylic acids and esters only','Alcohols and alkenes (with acid)','Amines and amides','Ethers only'], a:1},
-  {q:'A carbonium ion may do all of the following EXCEPT:', opts:['Eliminate H⁺ to form an alkene','Rearrange to a more stable ion','Spontaneously become a carbanion','Alkylate an aromatic ring'], a:2},
-  {q:'n-Propyl chloride + benzene/AlCl₃ gives mostly isopropylbenzene because:', opts:['The reaction is under thermodynamic control only','The 1° carbonium ion rearranges to the more stable 2° ion','n-Propylbenzene is unstable at room temperature','AlCl₃ selectively destroys 1° products'], a:1},
-  {q:'Isobutyl chloride + benzene/AlCl₃ gives, as the only product:', opts:['n-butylbenzene','sec-butylbenzene','tert-butylbenzene','isobutylbenzene (unrearranged)'], a:2},
-  {q:'Which is NOT a limitation of Friedel–Crafts alkylation?', opts:['Danger of polysubstitution','Possible rearrangement of the alkyl group','Aryl halides cannot replace alkyl halides','It always requires high pressure hydrogenation'], a:3},
-  {q:'Friedel–Crafts alkylation fails on rings bearing –NH₂, –NHR, or –NR₂ mainly because:', opts:['These rings are too electron-rich','The basic nitrogen ties up the Lewis acid catalyst','Nitrogen destroys the ring aromaticity','These rings are always deactivated'], a:1},
-  {q:'Hydrogenation of ethylbenzene (3H₂, Ni/Pt/Pd) gives:', opts:['Toluene','Cyclohexane','Ethylcyclohexane','Ethylbenzene remains unchanged'], a:2},
-  {q:'Hot KMnO₄ oxidation of an alkylbenzene side chain, regardless of its length, gives:', opts:['A ketone on the ring','An alcohol on the ring','A single –COOH group on the ring','No reaction at all'], a:2},
-  {q:'Oxidation of p-xylene with KMnO₄ gives:', opts:['Benzoic acid','Terephthalic acid','Phthalic acid','Isophthalic acid'], a:1},
-  {q:'Side-chain oxidation of an alkylbenzene is used for:', opts:['Only fuel synthesis','Synthesis of carboxylic acids and identification of alkylbenzenes','Only ring halogenation','Only Friedel–Crafts acylation'], a:1},
-  {q:'Ring halogenation of toluene (X₂, FeX₃, dark) occurs mainly at which positions?', opts:['Meta only','Ortho and para','Ipso only','All positions equally'], a:1},
-  {q:'Side-chain halogenation of alkylbenzenes (X₂, heat or light) proceeds by attack of:', opts:['A halide ion, X⁻','A positive halogen, X⁺','A halogen atom (radical), X•','A halonium bridge'], a:2},
-  {q:'The conditions that send halogen attack to the RING rather than the side chain are:', opts:['Heat or light, no catalyst','A Lewis-acid catalyst such as FeCl₃, in the dark','Very low temperature only','UV light with no catalyst'], a:1},
-  {q:'Hydrogen atoms on the carbon directly attached to the aromatic ring are called:', opts:['Vinylic hydrogens','Allylic hydrogens','Benzylic hydrogens','Ipso hydrogens'], a:2},
-  {q:'The correct order of ease of hydrogen-atom abstraction is:', opts:['1° > 2° > 3° > benzylic','CH₄ > 1° > 2° > 3° > benzylic','Benzylic ≈ allylic > 3° > 2° > 1° > CH₄, vinylic','Vinylic > benzylic > 3° > 2° > 1°'], a:2},
-  {q:'Bromination of ethylbenzene (Br₂, heat/light) gives almost exclusively:', opts:['2-bromo-1-phenylethane','1-bromo-1-phenylethane','A ring-brominated product','A mixture of ring and chain products in equal amounts'], a:1},
-  {q:'An alkyl group attached to a benzene ring is, for electrophilic aromatic substitution, a(n):', opts:['Deactivating, meta-director','Activating, ortho/para-director','Deactivating, ortho/para-director','Activating, meta-director'], a:1},
-  {q:'Chlorination of toluene with Cl₂/FeCl₃ (dark) gives o-chlorotoluene and p-chlorotoluene in roughly:', opts:['58% / 42%','100% / 0%','20% / 80%','50% / 50% exactly'], a:0},
-  {q:'An unknown C₈H₁₀ oxidized to give terephthalic acid (m.p. 300°, subl.) must be:', opts:['o-Xylene','m-Xylene','p-Xylene','Ethylbenzene'], a:2},
-];
+const quizDataByLevel = {
+  1: [
+  {q:"Arenes are hydrocarbons that contain:", opts:["Only aromatic rings", "Only aliphatic chains", "Both aliphatic and aromatic units", "Only cyclic alkanes"], a:2},
+  {q:"Ethylbenzene consists of:", opts:["Two benzene rings", "A benzene ring and an aliphatic side chain", "Only an aliphatic chain", "A cyclohexane ring"], a:1},
+  {q:"The ring portion of ethylbenzene undergoes:", opts:["Free-radical substitution", "Electrophilic substitution", "Nucleophilic addition", "Electrophilic addition"], a:1},
+  {q:"The side-chain portion of ethylbenzene undergoes:", opts:["Electrophilic substitution", "Free-radical substitution", "Nucleophilic substitution", "Electrophilic addition"], a:1},
+  {q:"Treating ethylbenzene with HNO3/H2SO4 introduces a nitro group into:", opts:["The side chain", "The ring", "Both equally", "Neither"], a:1},
+  {q:"The chief products of nitrating ethylbenzene are:", opts:["m- and p-nitroethylbenzene", "o- and m-nitroethylbenzene", "o- and p-nitroethylbenzene", "Only p-nitroethylbenzene"], a:2},
+  {q:"Treating ethylbenzene with Br2 and light introduces bromine into:", opts:["The ring", "The side chain", "Both", "Neither"], a:1},
+  {q:"The only product of side-chain bromination of ethylbenzene (heat/light) is:", opts:["2-Bromo-1-phenylethane", "1-Bromo-1-phenylethane", "o-Bromoethylbenzene", "p-Bromoethylbenzene"], a:1},
+  {q:"The special name given to methylbenzene is:", opts:["Xylene", "Styrene", "Toluene", "Cumene"], a:2},
+  {q:"The dimethylbenzenes are collectively called:", opts:["Toluenes", "Xylenes", "Cresols", "Styrenes"], a:1},
+  {q:"The special name for C6H5CH=CH2 is:", opts:["Toluene", "Cumene", "Styrene", "Xylene"], a:2},
+  {q:"Styrene is also known as:", opts:["Cresol and phenol", "Vinylbenzene and phenylethylene", "Benzaldehyde", "Toluic acid"], a:1},
+  {q:"Phenylacetylene is named as a substituted:", opts:["Alkene", "Alkane", "Alkyne", "Arene"], a:2},
+  {q:"A compound like C6H5CH2C6H5 (two benzene rings) is generally named as a derivative of:", opts:["Benzene", "An alkane", "An alkyl halide", "Styrene"], a:1},
+  {q:"Diphenylmethane and 1,2-diphenylethane are examples of compounds with:", opts:["One benzene ring", "Two benzene rings", "No benzene rings", "Three benzene rings"], a:1},
+  {q:"Arenes are generally:", opts:["Highly polar and water-soluble", "Low polarity and insoluble in water", "Ionic and water-soluble", "Strong acids"], a:1},
+  {q:"Arenes are soluble in:", opts:["Water", "Nonpolar solvents like ether and CCl4", "Only strong acids", "Only strong bases"], a:1},
+  {q:"Compared with water, arenes are:", opts:["Denser", "Less dense", "Equal density", "Immiscible but equal in density"], a:1},
+  {q:"Boiling points of arenes rise per added carbon by about:", opts:["1\u20132\u00b0C", "5\u201310\u00b0C", "20\u201330\u00b0C", "60\u201370\u00b0C"], a:2},
+  {q:"Melting points of arenes depend on:", opts:["Only molecular weight", "Only molecular shape", "Molecular weight and molecular shape", "Neither"], a:2},
+  {q:"The two chief industrial sources of alkylbenzenes are:", opts:["Coal tar and petroleum", "Seawater and natural gas", "Fermentation and coal tar", "Petroleum and seawater"], a:0},
+  {q:"Petroleum is the chief source of large quantities of:", opts:["Only benzene", "Benzene, toluene, and xylenes", "Only xylenes", "Only toluene"], a:1},
+  {q:"Toluene and xylenes are partly used as:", opts:["Refrigerants", "High-test gasoline components", "Fertilizers", "Pesticides"], a:1},
+  {q:"The two general methods for preparing alkylbenzenes are:", opts:["Friedel\u2013Crafts alkylation and side-chain conversion", "Ozonolysis and hydroboration", "Grignard synthesis and esterification", "Wurtz reaction and nitration"], a:0},
+  {q:"Friedel\u2013Crafts alkylation permits:", opts:["Removal of an alkyl group from the ring", "Direct attachment of an alkyl group to the ring", "Oxidation of the ring", "Reduction of the ring"], a:1},
+  {q:"The general Friedel\u2013Crafts alkylation equation is:", opts:["ArX + RH \u2192 ArR + HX", "ArH + RX \u2014Lewis acid\u2192 ArR + HX", "ArOH + RX \u2192 ArR + HX", "ArH + RH \u2192 ArR + H2"], a:1},
+  {q:"Which halide can NOT replace R\u2013X in Friedel\u2013Crafts alkylation?", opts:["Primary alkyl halide", "Secondary alkyl halide", "Aryl halide", "Benzylic halide"], a:2},
+  {q:"Which of these is NOT typically a Lewis acid catalyst for Friedel\u2013Crafts alkylation?", opts:["AlCl3", "BF3", "HF", "NaOH"], a:3},
+  {q:"The two methods for converting a side chain into an alkyl group are:", opts:["Clemmensen and Wolff\u2013Kishner reduction", "Friedel\u2013Crafts and Grignard", "Hydroboration and ozonolysis", "Cannizzaro and Claisen"], a:0},
+  {q:"Clemmensen reduction uses:", opts:["N2H4 and strong base, heat", "Zn(Hg), HCl, heat", "LiAlH4", "H2/Ni"], a:1},
+  {q:"Wolff\u2013Kishner reduction uses:", opts:["Zn(Hg) and HCl", "N2H4 and strong base, heat", "NaBH4", "KMnO4"], a:1},
+  {q:"Unlike Friedel\u2013Crafts alkylation, the ketone-reduction route:", opts:["Always causes polysubstitution", "Involves no rearrangement", "Requires aryl halides", "Cannot use a catalyst"], a:1},
+  {q:"Adding AlCl3 to benzene and methyl chloride produces:", opts:["No reaction", "Toluene and HCl gas", "Xylene", "Styrene"], a:1},
+  {q:"An example of a substituted alkyl halide usable in Friedel\u2013Crafts alkylation is:", opts:["Chlorobenzene", "Benzyl chloride", "Bromobenzene", "Vinyl chloride"], a:1},
+  {q:"Besides benzene, Friedel\u2013Crafts alkylation can occur on more complex ring systems such as:", opts:["Cyclohexane and cyclopentane", "Naphthalene and anthracene", "Furan and pyrrole", "Cyclopropane"], a:1},
+  {q:"In the Friedel\u2013Crafts mechanism, the first step generates:", opts:["A free radical", "A carbanion", "An alkyl carbonium ion", "A nitronium ion"], a:2},
+  {q:"The role of AlCl3 in Friedel\u2013Crafts alkylation is to:", opts:["Donate a proton", "Abstract the halogen from R\u2013X to form R+", "Reduce the ring", "Oxidize the side chain"], a:1},
+  {q:"Besides alkyl halides, carbonium ions that alkylate rings can come from:", opts:["Carboxylic acids and esters only", "Alcohols and alkenes (with acid)", "Amines and amides", "Ethers only"], a:1},
+  {q:"The product of benzene + tert-butyl alcohol/H2SO4 is:", opts:["n-Butylbenzene", "sec-Butylbenzene", "tert-Butylbenzene", "Isobutylbenzene"], a:2},
+  {q:"A carbonium ion may do all of the following EXCEPT:", opts:["Eliminate H+ to form an alkene", "Rearrange to a more stable ion", "Spontaneously become a carbanion", "Alkylate an aromatic ring"], a:2},
+  {q:"Isobutyl chloride + benzene/AlCl3 gives, as the only product:", opts:["n-Butylbenzene", "sec-Butylbenzene", "tert-Butylbenzene", "Unrearranged isobutylbenzene"], a:2},
+  {q:"Which is NOT a limitation of Friedel\u2013Crafts alkylation listed in the text?", opts:["Danger of polysubstitution", "Possible rearrangement of the alkyl group", "Aryl halides cannot replace alkyl halides", "It always requires high-pressure hydrogenation"], a:3},
+  {q:"Friedel\u2013Crafts alkylation fails on rings bearing \u2013NH2, \u2013NHR, or \u2013NR2 mainly because:", opts:["These rings are too electron-rich", "The basic nitrogen ties up the Lewis acid catalyst", "Nitrogen destroys ring aromaticity", "These rings are always deactivated"], a:1},
+  {q:"Except for hydrogenation and oxidation, reactions of alkylbenzenes involve:", opts:["Only nucleophilic substitution", "Electrophilic substitution in the ring or free-radical substitution in the side chain", "Only elimination reactions", "Only addition reactions"], a:1},
+  {q:"Hydrogenation of ethylbenzene (3H2, Ni/Pt/Pd) gives:", opts:["Toluene", "Cyclohexane", "Ethylcyclohexane", "Unchanged ethylbenzene"], a:2},
+  {q:"Oxidation of ethylbenzene with KMnO4 gives:", opts:["Phenol", "Benzoic acid", "Cyclohexanol", "Nitrobenzene"], a:1},
+  {q:"Hot KMnO4 oxidation of an alkylbenzene side chain, regardless of length, gives:", opts:["A ketone on the ring", "An alcohol on the ring", "A single \u2013COOH group on the ring", "No reaction"], a:2},
+  {q:"Oxidizing agents commonly used for side-chain oxidation include:", opts:["KMnO4, K2Cr2O7, and dilute HNO3", "NaOH and H2", "LiAlH4 and NaBH4", "O3 and H2O2 only"], a:0},
+  {q:"Oxidation of p-xylene with KMnO4 gives:", opts:["Benzoic acid", "Terephthalic acid", "Phthalic acid", "Isophthalic acid"], a:1},
+  {q:"Side-chain oxidation of an alkylbenzene is used for:", opts:["Only fuel synthesis", "Synthesis of carboxylic acids and identification of alkylbenzenes", "Only ring halogenation", "Only Friedel\u2013Crafts acylation"], a:1},
+  {q:"Ring halogenation of toluene (X2, FeX3, dark) occurs mainly at:", opts:["Meta only", "Ortho and para", "Ipso only", "All positions equally"], a:1},
+  {q:"Side-chain halogenation of alkylbenzenes (X2, heat or light) proceeds by attack of:", opts:["A halide ion", "A positive halogen", "A halogen atom (radical)", "A halonium bridge"], a:2},
+  {q:"Conditions that send halogen attack to the ring rather than the side chain:", opts:["Heat or light, no catalyst", "A Lewis-acid catalyst such as FeCl3, in the dark", "Very low temperature only", "UV light with no catalyst"], a:1},
+  {q:"Hydrogen atoms on the carbon directly attached to the aromatic ring are called:", opts:["Vinylic hydrogens", "Allylic hydrogens", "Benzylic hydrogens", "Ipso hydrogens"], a:2},
+  {q:"The correct order of ease of hydrogen-atom abstraction is:", opts:["1\u00b0>2\u00b0>3\u00b0>benzylic", "CH4>1\u00b0>2\u00b0>3\u00b0>benzylic", "Benzylic\u2248allylic>3\u00b0>2\u00b0>1\u00b0>CH4, vinylic", "Vinylic>benzylic>3\u00b0>2\u00b0>1\u00b0"], a:2},
+  {q:"Bromination of ethylbenzene (Br2, heat/light) gives almost exclusively:", opts:["2-Bromo-1-phenylethane", "1-Bromo-1-phenylethane", "A ring-brominated product", "An equal mixture of ring and chain products"], a:1},
+  {q:"An alkyl group attached to a benzene ring is, for electrophilic aromatic substitution, a(n):", opts:["Deactivating, meta-director", "Activating, ortho/para-director", "Deactivating, ortho/para-director", "Activating, meta-director"], a:1},
+  {q:"Chlorination of toluene with Cl2/FeCl3 (dark) gives o- and p-chlorotoluene in roughly:", opts:["58%/42%", "100%/0%", "20%/80%", "50%/50% exactly"], a:0},
+  {q:"The stepwise side-chain chlorination products of toluene are:", opts:["Benzyl alcohol, benzaldehyde, benzoic acid", "Benzyl chloride, benzal chloride, benzotrichloride", "o-, m-, p-chlorotoluene", "Chlorobenzene, dichlorobenzene, trichlorobenzene"], a:1},
+  {q:"An unknown C8H10 oxidized to give terephthalic acid (m.p. 300\u00b0, subl.) must be:", opts:["o-Xylene", "m-Xylene", "p-Xylene", "Ethylbenzene"], a:2}
+],
+  2: [
+  {q:"Why does nitration of ethylbenzene occur more readily than nitration of benzene?", opts:["The ethyl group deactivates the ring", "The ethyl group is electron-releasing and activates the ring", "Ethylbenzene has no ring", "Nitration always favors alkylbenzenes regardless of substituent"], a:1},
+  {q:"Why does side-chain bromination of ethylbenzene proceed more readily than bromination of ethane?", opts:["The ring withdraws electron density", "The ring stabilizes the radical formed at the adjacent (benzylic) carbon", "Ethylbenzene has more hydrogens", "Ethane is aromatic"], a:1},
+  {q:"Which position does side-chain bromination of ethylbenzene occur at exclusively?", opts:["The terminal CH3 carbon", "The carbon nearer the ring", "Either carbon equally", "The ring carbon"], a:1},
+  {q:"p-Ethyltoluene is named as a derivative of:", opts:["Ethylbenzene", "Toluene", "Xylene", "Styrene"], a:1},
+  {q:"A compound with a very complicated side chain on benzene, such as 2-methyl-3-phenylpentane, is named as a:", opts:["Substituted toluene", "Phenylalkane", "Substituted styrene", "Xylene derivative"], a:1},
+  {q:"Compounds containing more than one benzene ring, like triphenylmethane, are nearly always named as derivatives of:", opts:["Benzene", "Alkanes", "Styrene", "Toluene"], a:1},
+  {q:"Alkenylbenzenes other than styrene are generally named as:", opts:["Substituted alkynes", "Substituted alkenes", "Substituted alkanes", "Substituted arenes only"], a:1},
+  {q:"Half of the toluene and xylenes from petroleum are used:", opts:["As pesticides", "In high-test gasoline", "In plastics manufacturing only", "As solvents for paint only"], a:1},
+  {q:"Why is the ketone-reduction (Clemmensen/Wolff\u2013Kishner) method for preparing alkylbenzenes considered important?", opts:["It always gives higher yields than Friedel\u2013Crafts", "The needed ketones are readily available via Friedel\u2013Crafts acylation and no rearrangement occurs", "It requires no catalyst at all", "It works only with aryl halides"], a:1},
+  {q:"Why can't aryl halides be used in place of alkyl halides in Friedel\u2013Crafts alkylation?", opts:["They are too expensive", "The halogen attached to the aromatic ring has low reactivity and cannot be ionized", "They react too violently", "They do not exist"], a:1},
+  {q:"Why is an excess of the aromatic hydrocarbon used in Friedel\u2013Crafts alkylation?", opts:["To increase the boiling point", "To limit substitution to monoalkylation by favoring encounters with unsubstituted rings", "To act as the catalyst", "To prevent HCl gas formation"], a:1},
+  {q:"Why does the aromatic compound often serve as both solvent and reactant in Friedel\u2013Crafts alkylation?", opts:["Because it is cheaper than any solvent", "Because a large excess of it is already required to limit polysubstitution", "Because AlCl3 requires an aromatic solvent", "Because HCl gas needs an aromatic solvent to escape"], a:1},
+  {q:"In the Friedel\u2013Crafts mechanism, what does the arenium ion lose in the final step to restore aromaticity?", opts:["An electron", "A proton (H+)", "A chloride ion", "A methyl group"], a:1},
+  {q:"Other Lewis acids (BF3, FeCl3, HF) can replace AlCl3 in Friedel\u2013Crafts alkylation because:", opts:["They are cheaper", "They can generate carbonium ions from alkyl halides in the same way", "They do not require an alkyl halide", "They react only with aryl halides"], a:1},
+  {q:"Why do alcohols and alkenes alkylate aromatic rings under acidic conditions?", opts:["Acid converts them into the same kind of carbonium-ion electrophile used in Friedel\u2013Crafts alkylation", "Acid destroys the aromatic ring first", "They react without any electrophile", "Acid converts benzene into a nucleophile"], a:0},
+  {q:"Why does n-propyl chloride with benzene/AlCl3 give mostly isopropylbenzene?", opts:["Isopropylbenzene is added directly", "The 1\u00b0 carbonium ion rearranges via a 1,2-hydride shift to the more stable 2\u00b0 ion", "Benzene attacks only secondary carbons", "n-Propylbenzene decomposes under the reaction conditions"], a:1},
+  {q:"What are the approximate percentages of n-butylbenzene and sec-butylbenzene from n-butyl chloride + benzene/AlCl3?", opts:["50%/50%", "34%/66%", "100%/0%", "10%/90%"], a:1},
+  {q:"Why does neopentyl alcohol + benzene/BF3 give exclusively tert-pentylbenzene?", opts:["The 1\u00b0 carbonium ion rearranges completely to the far more stable 3\u00b0 ion before reacting", "No rearrangement occurs", "Neopentyl alcohol reacts without forming a carbonium ion", "tert-Pentylbenzene is the only possible constitutional isomer"], a:0},
+  {q:"Why does a ring less reactive than a halobenzene fail to undergo Friedel\u2013Crafts alkylation?", opts:["The carbonium ion R+ is a weaker electrophile than reagents like NO2+ that succeed in EAS", "Such rings are not aromatic", "AlCl3 cannot dissolve in such rings", "Such rings react only with nucleophiles"], a:0},
+  {q:"Why is oxidation of a side chain more difficult than oxidation of an alkene?", opts:["Alkanes are always unreactive", "It requires prolonged treatment with hot KMnO4", "It requires cold, dilute KMnO4", "It never actually occurs"], a:1},
+  {q:"Side-chain oxidation is useful for which two purposes?", opts:["Fuel production and combustion analysis", "Synthesis of carboxylic acids and identification of alkylbenzenes", "Ring halogenation and nitration", "Friedel\u2013Crafts acylation and reduction"], a:1},
+  {q:"p-Nitrotoluene oxidized with Cr2O7\u00b2\u207b/H+ gives:", opts:["p-Nitrobenzyl alcohol", "p-Nitrobenzoic acid", "p-Toluidine", "p-Cresol"], a:1},
+  {q:"An unknown C8H10 that oxidizes to phthalic acid (m.p. 231\u00b0) must be:", opts:["m-Xylene", "p-Xylene", "o-Xylene", "Ethylbenzene"], a:2},
+  {q:"An unknown C8H10 that oxidizes to isophthalic acid (m.p. 348\u00b0) must be:", opts:["o-Xylene", "m-Xylene", "p-Xylene", "Ethylbenzene"], a:1},
+  {q:"Why does an alkyl group direct electrophilic aromatic substitution to ortho and para positions?", opts:["Its electron-releasing effect stabilizes the arenium intermediate more at ortho/para", "It withdraws electron density from meta positions only", "It blocks the ortho position sterically", "It has no directing effect"], a:0},
+  {q:"What conditions favor ring (not side-chain) halogenation of an alkylbenzene?", opts:["Heat or UV light alone", "A Lewis-acid catalyst such as FeCl3, in the dark", "Very high pressure", "Aqueous base"], a:1},
+  {q:"What conditions favor side-chain (not ring) halogenation of an alkylbenzene?", opts:["A Lewis-acid catalyst in the dark", "Heat or light, without a Lewis-acid catalyst", "Dilute base at low temperature", "High-pressure hydrogenation"], a:1},
+  {q:"Why does a Lewis-acid catalyst direct halogen attack to the ring rather than the side chain?", opts:["It promotes transfer of a positive halogen that is attracted to the electron-rich ring", "It destroys the side chain", "It cools the reaction", "It generates halogen atoms"], a:0},
+  {q:"The major product of ethylbenzene + Cl2 (heat/light) is:", opts:["2-Chloro-1-phenylethane", "1-Chloro-1-phenylethane", "o-Chloroethylbenzene", "Benzal chloride"], a:1},
+  {q:"Why is the benzylic position preferentially attacked in side-chain halogenation?", opts:["It has the most hydrogens", "The adjacent ring stabilizes the resulting radical", "It is furthest from the ring", "Halogens cannot reach other positions sterically"], a:1},
+  {q:"The correct reactivity order for hydrogen-atom abstraction is:", opts:["1\u00b0>2\u00b0>3\u00b0>benzylic\u2248allylic", "Benzylic\u2248allylic>3\u00b0>2\u00b0>1\u00b0>CH4, vinylic", "Vinylic>CH4>1\u00b0>2\u00b0>3\u00b0", "CH4>vinylic>1\u00b0>2\u00b0>3\u00b0"], a:1},
+  {q:"The three stepwise chlorination products of toluene's side chain, in order, are:", opts:["Toluene\u2192o-chlorotoluene\u2192p-chlorotoluene\u2192benzotrichloride", "Toluene\u2192benzyl chloride\u2192benzal chloride\u2192benzotrichloride", "Toluene\u2192benzal chloride\u2192benzyl chloride\u2192benzotrichloride", "Toluene\u2192benzoic acid\u2192benzaldehyde\u2192benzyl alcohol"], a:1},
+  {q:"Nitration, sulfonation, and ring halogenation of toluene all share which orientation pattern?", opts:["Meta-predominant", "Ortho- and para-predominant", "Ipso only", "Random distribution"], a:1},
+  {q:"Temperature is said to affect the orientation (o- vs. p-xylene ratio) in which reaction?", opts:["Nitration of toluene", "A second Friedel\u2013Crafts methylation of toluene", "Bromination of the side chain", "Hydrogenation of ethylbenzene"], a:1},
+  {q:"Aniline (C6H5NH2) fails to undergo Friedel\u2013Crafts alkylation because:", opts:["Its ring is too aromatic", "The basic nitrogen forms a complex with AlCl3, tying it up", "It has no ring at all", "It reacts too fast to control"], a:1},
+  {q:"Compared to benzene, ethylbenzene's ring reacts with nitrating mixture:", opts:["More slowly", "More readily", "At the exact same rate", "Not at all"], a:1},
+  {q:"Compared to ethane, ethylbenzene's side chain reacts with Br2/light:", opts:["More slowly", "More readily", "At the exact same rate", "Not at all"], a:1},
+  {q:"According to the 'control rule,' which species attacks the side chain of an alkylbenzene?", opts:["A halogen ion, X+", "A halogen atom, X\u2022", "A hydride ion", "A hydroxide ion"], a:1},
+  {q:"According to the 'control rule,' which species attacks the ring of an alkylbenzene?", opts:["A halogen atom, X\u2022", "A halogen ion/positive halogen, X+", "A carbanion", "A radical anion"], a:1},
+  {q:"Theoretically, bromination of ethylbenzene's side chain could give two products; which is essentially the only one formed?", opts:["2-Bromo-1-phenylethane", "1-Bromo-1-phenylethane", "A 50:50 mixture", "Neither forms"], a:1},
+  {q:"The comparison drawn between halogenation of alkylbenzenes and halogenation of alkenes highlights that:", opts:["Atoms bring about substitution while ions/molecules that transfer ions bring about addition", "Both always give identical mechanisms", "Alkenes never react with halogens", "Only ions can react with alkylbenzenes"], a:0},
+  {q:"Friedel\u2013Crafts acylation is mentioned as relevant because:", opts:["It directly makes alkylbenzenes", "It supplies the ketones used in the Clemmensen/Wolff\u2013Kishner route", "It replaces the need for AlCl3", "It only works on the side chain"], a:1},
+  {q:"The boiling-point trend for arenes is best summarized as:", opts:["Boiling point falls sharply as molecular weight rises", "Boiling point rises about 20\u201330\u00b0C per added carbon", "Boiling point is unrelated to molecular weight", "Boiling point rises by 100\u00b0C per added carbon"], a:1},
+  {q:"Alkyl halides used in Friedel\u2013Crafts alkylation may, per the text, contain:", opts:["Only methyl groups", "More complex alkyl groups and halogens other than chlorine", "Only fluorine", "Only aryl groups"], a:1},
+  {q:"Distinguishing o-, m-, p-xylene and ethylbenzene by oxidation works because:", opts:["They all give the same acid", "Each isomer's oxidation product has a distinguishable melting point", "Only one of them can be oxidized", "Oxidation destroys all structural information"], a:1},
+  {q:"Which is a correct pairing of alkylbenzene and oxidation product?", opts:["m-Xylene \u2192 terephthalic acid", "p-Xylene \u2192 isophthalic acid", "o-Xylene \u2192 phthalic acid", "Ethylbenzene \u2192 phthalic acid"], a:2},
+  {q:"The text's example of 'double duty' for the aromatic compound means it serves as:", opts:["Catalyst and product", "Solvent and reactant", "Only a byproduct", "Only an inert diluent"], a:1},
+  {q:"A ketone can be converted into an alkylbenzene side chain using which two named reductions?", opts:["Cannizzaro and Claisen", "Clemmensen and Wolff\u2013Kishner", "Meerwein\u2013Ponndorf and Oppenauer", "Birch and Luche"], a:1},
+  {q:"The naming rule for a dialkylbenzene bearing exactly one methyl group is to name it as a derivative of:", opts:["Xylene", "Toluene", "Styrene", "Benzene only"], a:1},
+  {q:"Why might side-chain halogenation of an alkylbenzene give a mixture of isomers?", opts:["The reaction is always 100% selective", "A side chain longer than methyl offers more than one position for attack", "Halogens never react with side chains", "Only the ring can be halogenated"], a:1}
+],
+  3: [
+  {q:"Isobutyl chloride + benzene/AlCl3 gives exclusively tert-butylbenzene because:", opts:["No carbonium ion forms at all", "The initial 1\u00b0 ion undergoes a shift to the far more stable 3\u00b0 ion before reacting", "AlCl3 selectively destroys other isomers", "tert-Butylbenzene is the only possible product structurally"], a:1},
+  {q:"Aryl halides fail to generate a viable carbonium ion under Friedel\u2013Crafts conditions chiefly because:", opts:["The resulting aryl cation would be unstable due to lack of adjacent stabilization and partial double-bond character in C\u2013X", "Aryl halides have no halogen atom", "AlCl3 cannot dissolve aryl halides", "Aryl halides are always more expensive"], a:0},
+  {q:"In the final step of the Friedel\u2013Crafts mechanism, AlCl4\u207b functions as:", opts:["An oxidizing agent", "A base that removes a proton to restore aromaticity", "A reducing agent", "A nucleophile that attacks the ring"], a:1},
+  {q:"The statement that R+ is a 'less powerful nucleophile-seeker' than NO2+ explains why:", opts:["Some rings undergo nitration but not Friedel\u2013Crafts alkylation", "All rings undergo both reactions equally", "Nitration never occurs on activated rings", "R+ is more reactive than NO2+"], a:0},
+  {q:"Heat/light favors side-chain halogenation rather than ring halogenation because:", opts:["It homolyzes X2 into radicals that abstract hydrogens rather than generating a ring-seeking electrophile", "It ionizes X2 into X+ and X-", "It destroys the aromatic ring", "It has no effect on X2"], a:0},
+  {q:"FeCl3 promotes ring (not side-chain) halogenation because:", opts:["It generates halogen atoms", "It polarizes X\u2013X to give an effectively positive halogen attracted to the ring's \u03c0 electrons", "It reduces the halogen to X-", "It has no catalytic role"], a:1},
+  {q:"The reactivity order benzylic\u2248allylic>3\u00b0>2\u00b0>1\u00b0>CH4,vinylic for H-abstraction reflects:", opts:["Steric bulk only", "Increasing radical stability via resonance/hyperconjugation", "Random selectivity", "Bond length only"], a:1},
+  {q:"n-Propyl chloride + benzene/AlCl3 gives a 35:65 mixture of n- and isopropylbenzene because:", opts:["Both ions react and rearrange at competing rates before/after encountering benzene", "Only rearranged product ever forms", "No rearrangement is possible for propyl cations", "Benzene reacts exclusively with primary ions"], a:0},
+  {q:"Unlike n-propyl chloride, isobutyl chloride gives a single product because:", opts:["Its rearrangement (1\u00b0\u21923\u00b0) is a much larger stability gain, favoring essentially complete rearrangement", "It cannot rearrange at all", "Isobutyl chloride does not ionize", "AlCl3 does not react with isobutyl chloride"], a:0},
+  {q:"Aniline poisons AlCl3 in Friedel\u2013Crafts conditions specifically by:", opts:["Forming a dative bond from the nitrogen lone pair to the electron-deficient aluminum", "Reducing AlCl3 to Al metal", "Precipitating as AlN", "Reacting with the ring instead"], a:0},
+  {q:"The electrophile in ring halogenation (FeCl3/X2) differs from that in nitration (HNO3/H2SO4) in that:", opts:["They are actually the same species", "One is a polarized/positive halogen and the other is the nitronium ion", "Halogenation uses no electrophile", "Nitration uses a radical"], a:1},
+  {q:"The side chain of an alkylbenzene is oxidized all the way to \u2013COOH regardless of original length because:", opts:["Oxidation stops at the first ketone formed", "Prolonged strong oxidation progressively attacks each new benzylic-type position until only the ring-stabilized carboxyl remains", "The ring blocks all oxidation beyond one step", "KMnO4 cannot oxidize past an alcohol"], a:1},
+  {q:"The carboxylic acid is the stable end point of side-chain oxidation because:", opts:["It is the least oxidized possible state", "Further chain carbons are lost as CO2 under vigorous prolonged oxidation until only the ring-attached, most stable carbon remains", "COOH cannot be produced from a side chain", "Oxidation always stops at an aldehyde"], a:1},
+  {q:"Ethylbenzene nitrates predominantly ortho/para (not meta) to the ethyl group because:", opts:["The ethyl group's electron release stabilizes ortho/para arenium intermediates more than the meta intermediate", "Meta attack is sterically blocked", "Ethyl groups always deactivate rings", "Nitration is meta-directing by nature"], a:0},
+  {q:"Excess aromatic hydrocarbon (not excess AlCl3) controls polysubstitution because:", opts:["AlCl3 is a catalyst not consumed stoichiometrically, and excess arene favors carbonium-ion encounters with unsubstituted rings", "More AlCl3 also slows the reaction", "Excess AlCl3 destroys the alkyl halide", "Only arene excess can dissolve AlCl3"], a:0},
+  {q:"Alcohols and alkenes need acid catalysis to alkylate aromatic rings because:", opts:["Acid converts them into the same carbonium-ion electrophile required for ring attack", "Acid destroys the ring's aromaticity", "They already contain carbonium ions", "Acid is needed only to dissolve benzene"], a:0},
+  {q:"The mechanistic feature common to alkyl-halide, alcohol, and alkene routes to Friedel\u2013Crafts-type alkylation is:", opts:["All three require no electrophile", "All three ultimately generate the same carbonium-ion electrophile R+", "All three use a radical mechanism", "None of them can rearrange"], a:1},
+  {q:"Side-chain bromination of ethylbenzene is regioselective for the benzylic carbon because:", opts:["Abstraction there gives a radical stabilized by resonance with the aromatic ring", "The terminal carbon is sterically blocked", "Bromine cannot reach the terminal carbon", "The benzylic C\u2013H bond is simply the weakest bond for unrelated reasons"], a:0},
+  {q:"If n-propylbenzene is treated with Cl2/heat or light, the major product would be expected at:", opts:["The terminal (C3) carbon", "The benzylic (C1) carbon", "The ring", "Equal amounts at all carbons"], a:1},
+  {q:"'Temperature may affect orientation' in toluene's second Friedel\u2013Crafts alkylation implies:", opts:["The o-/p-xylene ratio can shift with temperature, possibly reflecting kinetic vs. thermodynamic control", "Temperature has no chemical significance", "Only meta-xylene forms at high temperature", "The reaction becomes non-aromatic at high temperature"], a:0},
+  {q:"Ring halogenation gives 'chiefly,' not exclusively, ortho/para products because:", opts:["Meta attack is completely impossible", "Ortho/para preference reflects a kinetic/electronic preference, not an absolute exclusion of other positions", "All positions are equally favored", "The catalyst only allows ortho attack"], a:1},
+  {q:"The strongest evidence that two distinct electrophilic species (X\u2022 and X+) operate in halogenation of toluene is:", opts:["Different colors of the reaction mixture", "The same reagent (Cl2) gives entirely different product distributions depending only on light/heat vs. Lewis-acid catalyst", "The reaction requires two different halogens", "Toluene reacts only with Br2, never Cl2"], a:1},
+  {q:"Cl2 can give totally different alkylbenzene products because:", opts:["It can be activated homolytically (radicals) or heterolytically/polarized (electrophilic), leading to different reactive species", "Cl2 is actually two different compounds", "Only one activation pathway exists for Cl2", "Alkylbenzenes react only with F2"], a:0},
+  {q:"The ketone-reduction route (Clemmensen/Wolff\u2013Kishner) is preferred over Friedel\u2013Crafts alkylation for building an unrearranged straight chain because:", opts:["Friedel\u2013Crafts alkylation is always faster", "Reduction proceeds without a carbocation intermediate, so the chain connectivity is preserved", "Reduction requires no catalyst of any kind", "Friedel\u2013Crafts alkylation cannot use AlCl3"], a:1},
+  {q:"To obtain n-butylbenzene in high yield rather than sec-butylbenzene, the text's logic implies one should:", opts:["Use n-butyl chloride/AlCl3 directly", "Build the chain via Friedel\u2013Crafts acylation to a ketone followed by Clemmensen or Wolff\u2013Kishner reduction", "Use excess AlCl3", "Use aryl halides instead of alkyl halides"], a:1},
+  {q:"Identification of an unknown alkylbenzene by oxidation works because:", opts:["Oxidation destroys all positional information", "The number/position of side chains is preserved as the position of the resulting carboxyl group(s)", "Every alkylbenzene gives the same acid", "Only para-substituted rings can be oxidized"], a:1},
+  {q:"Terephthalic acid's unusually high melting point (subliming at 300\u00b0) compared to its ortho/meta isomers reflects:", opts:["Its highly symmetric structure allowing efficient packing and strong lattice stability", "A weaker structure than the other isomers", "Random variation with no structural cause", "Its lack of a carboxyl group"], a:0},
+  {q:"The aromatic compound's 'double duty' as solvent and reactant in Friedel\u2013Crafts alkylation is a direct consequence of:", opts:["A separate solvent always being required", "The large stoichiometric excess needed to limit polysubstitution being enough in volume to also serve as solvent", "AlCl3 requiring aromatic solvents specifically", "HCl gas needing an aromatic medium"], a:1},
+  {q:"Halobenzenes can undergo Friedel\u2013Crafts alkylation while amine-substituted rings cannot, because:", opts:["Halobenzenes are more electron-rich than amines", "The failure of amines is a catalyst-poisoning (non-electronic) effect, unlike simple ring deactivation", "Amines are always aromatic while halobenzenes are not", "Halobenzenes contain no ring at all"], a:1},
+  {q:"The same alkyl group can activate the ring toward electrophiles and stabilize a benzylic radical because:", opts:["These are unrelated coincidental effects", "Hyperconjugative/conjugative electron donation underlies both the ring-activating and radical-stabilizing effects", "Only the ring effect is real", "Only the radical effect is real"], a:1},
+  {q:"Chlorination of ethylbenzene's ring under FeCl3/dark catalysis would be expected to occur predominantly:", opts:["At the meta position", "At the ortho and para positions relative to the ethyl group", "Exclusively at the ipso carbon", "Equally at all six ring positions"], a:1},
+  {q:"'R may rearrange' in the general Friedel\u2013Crafts equation implies that:", opts:["The alkylbenzene product can always be predicted directly from the alkyl halide's structure", "The product must be inferred from the relative stability of possible (including rearranged) carbonium ions", "Rearrangement never actually happens in practice", "Only tertiary halides are usable"], a:1},
+  {q:"Bromination of ethylbenzene's side chain gives a nearly pure single product while chlorination gives ~91%/9% because:", opts:["Bromine atoms are more reactive but less selective than chlorine", "Bromine atoms are less reactive and more selective than chlorine atoms", "Chlorine cannot abstract benzylic hydrogens at all", "Bromine reacts only with the ring"], a:1},
+  {q:"Using excess AlCl3 instead of excess benzene to control polysubstitution would fail because:", opts:["AlCl3 is a catalyst and does not change the statistical likelihood of a carbonium ion meeting an unsubstituted vs. substituted ring", "AlCl3 cannot be used in excess", "Excess AlCl3 destroys benzene", "Excess AlCl3 always causes explosions"], a:0},
+  {q:"A ring can be reactive enough for nitration yet unreactive toward Friedel\u2013Crafts alkylation because:", opts:["Nitration's electrophile (NO2+) is much stronger/more reactive than the carbonium-ion electrophile of alkylation", "Nitration requires no electrophile", "Friedel\u2013Crafts alkylation always works on any aromatic ring", "NO2+ is weaker than R+"], a:0},
+  {q:"The partial double-bond character of the C\u2013Cl bond in chlorobenzene (versus an alkyl chloride) explains why:", opts:["It ionizes more easily with AlCl3", "It resists ionization by AlCl3 far more than an alkyl C\u2013Cl bond does", "Chlorobenzene is not aromatic", "AlCl3 cannot react with any chlorinated compound"], a:1},
+  {q:"Hot KMnO4 can fully oxidize even a bulky, branched side chain to \u2013COOH because:", opts:["Oxidative cleavage proceeds stepwise from the benzylic position inward, continually generating new oxidizable termini", "Branched chains are immune to oxidation", "KMnO4 only oxidizes methyl groups", "The ring is oxidized first"], a:0},
+  {q:"The fundamental mechanistic difference between the electrophile in Friedel\u2013Crafts alkylation and the radical in side-chain halogenation is:", opts:["Both are neutral atoms", "One is a fully formed cation seeking \u03c0-electron density (two-electron process); the other is a neutral radical seeking one electron (homolytic process)", "There is no real difference", "Both attack via the exact same transition state"], a:1},
+  {q:"Excess unsubstituted arene ensures a carbonium ion is more likely to react with an unsubstituted ring because:", opts:["It raises the statistical ratio of unsubstituted to substituted molecules available for collision", "Substituted rings are chemically inert", "Carbonium ions cannot react with substituted rings at all", "Excess arene lowers the reaction temperature"], a:0},
+  {q:"The overall lesson of comparing halogenation of alkylbenzenes with halogenation of alkenes is that:", opts:["Atoms/radicals tend to cause substitution while ionic/electrophilic species (or molecules that transfer ions) tend to cause addition or ring substitution", "Only ions ever react with organic molecules", "Alkenes and alkylbenzenes react identically in all respects", "Radicals only ever add to double bonds"], a:0}
+]
+};
+const quizLevelMeta = {1:'Level 1 · Easy (60)', 2:'Level 2 · Medium (50)', 3:'Level 3 · Hard (40)'};
+let currentQuizLevel = 1;
+let quizData = quizDataByLevel[currentQuizLevel];
 
 let quizOrder = [];
 function buildQuiz(){
+  quizData = quizDataByLevel[currentQuizLevel];
   quizOrder = quizData.map((_,i)=>i);
   const body = document.getElementById('quizBody');
   body.innerHTML='';
@@ -1010,6 +1277,20 @@ function buildQuiz(){
   });
   document.getElementById('quizScore').textContent = 'Score: — / ' + quizOrder.length;
 }
+const quizLevelRow=document.getElementById('quizLevelRow');
+Object.keys(quizLevelMeta).forEach(lvl=>{
+  const b=document.createElement('button');
+  b.className='chip'+(Number(lvl)===currentQuizLevel?' on':'');
+  b.textContent=quizLevelMeta[lvl];
+  b.dataset.level=lvl;
+  b.addEventListener('click',()=>{
+    currentQuizLevel=Number(lvl);
+    document.querySelectorAll('#quizLevelRow .chip').forEach(c=>c.classList.remove('on'));
+    b.classList.add('on');
+    buildQuiz();
+  });
+  quizLevelRow.appendChild(b);
+});
 document.getElementById('submitQuiz').addEventListener('click',()=>{
   let score=0;
   document.querySelectorAll('.q-card').forEach(card=>{
